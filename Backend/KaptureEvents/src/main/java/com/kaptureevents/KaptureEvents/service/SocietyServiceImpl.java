@@ -3,6 +3,7 @@
     import com.kaptureevents.KaptureEvents.entity.Society;
     import com.kaptureevents.KaptureEvents.model.SocietyModel;
     import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
+    import org.springframework.beans.BeanUtils;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
@@ -37,6 +38,26 @@
             }else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        }
+
+        @Override
+        public ResponseEntity<Society> editSocietyDetails(Long id, SocietyModel updatedSocietyModel) {
+
+            //Retrieve existing student from database
+            Society existingSociety = societyRepository.findById(id).orElse(null);
+            if(existingSociety ==  null){
+                //returning not found response if society not found
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            //updating existing student with new details
+            BeanUtils.copyProperties(updatedSocietyModel,existingSociety,"id");
+
+            //saving to DB
+            societyRepository.save(existingSociety);
+
+            //returning updated student
+            return new ResponseEntity<>(new Society(updatedSocietyModel),HttpStatus.OK);
         }
 
 

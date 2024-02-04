@@ -37,4 +37,12 @@ public class SocietyController {
             return societyService.societyProfile(id);
     }
 
+    //To Do: Remove id from Path Variable and get it from
+    //Animesh for currently logged user
+    @PutMapping("/profile/edit/{id}")
+    public ResponseEntity<Society> updateSocietyDetails(@PathVariable Long id,
+                                                        @RequestBody SocietyModel updatedSocietyModel){
+        return societyService.editSocietyDetails(id,updatedSocietyModel);
+    }
+
 }

@@ -8,4 +8,6 @@ public interface SocietyService {
     void registerSociety(SocietyModel societyModel);
 
     ResponseEntity<Society> societyProfile(Long id);
+
+    ResponseEntity<Society> editSocietyDetails(Long id, SocietyModel updatedSocietyModel);
 }
