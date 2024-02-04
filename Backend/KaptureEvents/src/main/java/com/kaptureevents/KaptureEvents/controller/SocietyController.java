@@ -1,14 +1,13 @@
 package com.kaptureevents.KaptureEvents.controller;
 
+import com.kaptureevents.KaptureEvents.entity.Society;
 import com.kaptureevents.KaptureEvents.model.SocietyModel;
 import com.kaptureevents.KaptureEvents.service.SocietyService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/society")
@@ -26,8 +25,16 @@ public class SocietyController {
             System.out.println("societyModel = " + societyModel);
             return "Society Registration Successful";
         } catch (Exception e) {
-            log.error("Error occurred during society registration", e);
-            return "Society Registration Failed";
+            log.error(e.getMessage(), e);
         }
+           return "Society Registration Failed";
     }
+
+    //To Do: Remove the id from path variable and get it from Animesh
+    //(for currently logged user)
+    @GetMapping("/profile/{id}")
+    private ResponseEntity<Society> societyProfile(@PathVariable Long id){
+            return societyService.societyProfile(id);
+    }
+
 }
