@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class KaptureEventsApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(KaptureEventsApplication.class, args);
 	}
 
