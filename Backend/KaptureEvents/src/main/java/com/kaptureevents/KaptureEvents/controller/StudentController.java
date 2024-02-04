@@ -1,10 +1,12 @@
 package com.kaptureevents.KaptureEvents.controller;
 
+import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.model.StudentModel;
 import com.kaptureevents.KaptureEvents.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,9 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
     @Autowired
     private StudentService studentService;
-
-    @Autowired
-    private StudentModel studentModel;
 
     //Student Registration
     @PostMapping("/registration")
@@ -29,8 +28,10 @@ public class StudentController {
         return "User Registration Failed";
     }
 
-    @GetMapping("/profile")
-    private StudentModel studentProfile(){
-        return studentService.studentProfile(studentModel.getEmail());
+    //TODO : Remove email from Path Variable and get it from
+    // Spring Security for currently logged in user
+    @GetMapping("/profile/{email}")
+    private ResponseEntity<Student> studentProfile(@PathVariable String email){
+        return studentService.studentProfile(email);
     }
 }
