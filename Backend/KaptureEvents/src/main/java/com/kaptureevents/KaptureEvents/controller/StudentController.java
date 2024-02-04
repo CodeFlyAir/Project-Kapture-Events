@@ -34,4 +34,12 @@ public class StudentController {
     private ResponseEntity<Student> studentProfile(@PathVariable String email){
         return studentService.studentProfile(email);
     }
+
+    //TODO : Remove email from Path Variable and get it from
+    // Spring Security for currently logged in user
+    @PutMapping("/profile/edit/{email}")
+    public ResponseEntity<Student> updateStudentDetails(@PathVariable String email,
+                                                             @RequestBody StudentModel updatedStudentModel) {
+        return studentService.editStudentDetails(email, updatedStudentModel);
+    }
 }

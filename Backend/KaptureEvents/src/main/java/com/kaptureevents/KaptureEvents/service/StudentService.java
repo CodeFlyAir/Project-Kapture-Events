@@ -8,4 +8,6 @@ public interface StudentService {
     void registerStudent(StudentModel studentModel);
 
     ResponseEntity<Student> studentProfile(String email);
+
+    ResponseEntity<Student> editStudentDetails(String email, StudentModel updatedStudentModel);
 }

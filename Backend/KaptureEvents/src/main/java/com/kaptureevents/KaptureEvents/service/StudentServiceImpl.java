@@ -3,6 +3,7 @@ package com.kaptureevents.KaptureEvents.service;
 import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.model.StudentModel;
 import com.kaptureevents.KaptureEvents.repository.StudentRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class StudentServiceImpl implements StudentService{
         student.setRoll(studentModel.getRoll());
         student.setEmail(studentModel.getEmail());
         student.setContact(studentModel.getContact());
-        student.setGender(studentModel.getGender());
+        student.setGender(studentModel.getGender().toString().toUpperCase().charAt(0));
 
         studentRepository.save(student);    //Save the student to DB
     }
@@ -42,6 +43,27 @@ public class StudentServiceImpl implements StudentService{
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // If student is not present in DB
         }
+    }
+
+    @Override
+    public ResponseEntity<Student> editStudentDetails(String email, StudentModel updatedStudentModel) {
+        // Retrieve existing student from the database
+        Student existingStudent = studentRepository.findById(email).orElse(null);
+
+        if (existingStudent == null) {
+            // Return not found response if the student is not present
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Update existing student with the new details
+        BeanUtils.copyProperties(updatedStudentModel, existingStudent, "email", "eventId");
+
+        // Save the updated student back to the database
+        studentRepository.save(existingStudent);
+
+        // Return the updated student details
+        return new ResponseEntity<>(new Student(updatedStudentModel), HttpStatus.OK);
+
     }
 
 }
