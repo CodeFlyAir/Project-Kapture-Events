@@ -31,6 +31,7 @@ public class SecurityNew  {
         // Configure OAuth 2.0 login with the success handler
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/student/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2Login -> {
