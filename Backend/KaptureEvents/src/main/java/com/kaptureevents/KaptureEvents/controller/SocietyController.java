@@ -30,19 +30,19 @@ public class SocietyController {
            return "Society Registration Failed";
     }
 
-    //To Do: Remove the id from path variable and get it from Animesh
-    //(for currently logged user)
-    @GetMapping("/profile/{id}")
-    private ResponseEntity<Society> societyProfile(@PathVariable Long id){
-            return societyService.societyProfile(id);
+    //ToDo: Remove the id from path variable and get it
+    // from Animesh (for currently logged user)
+
+    @GetMapping("/profile/{email}")
+    private ResponseEntity<Society> societyProfile(@PathVariable String email){
+            return societyService.societyProfile(email);
     }
 
-    //To Do: Remove id from Path Variable and get it from
-    //Animesh for currently logged user
-    @PutMapping("/profile/edit/{id}")
-    public ResponseEntity<Society> updateSocietyDetails(@PathVariable Long id,
+    //ToDo: Remove id from Path Variable and get it from
+    // Animesh for currently logged user
+    @PutMapping("/profile/edit/{email}")
+    public ResponseEntity<Society> updateSocietyDetails(@PathVariable String email,
                                                         @RequestBody SocietyModel updatedSocietyModel){
-        return societyService.editSocietyDetails(id,updatedSocietyModel);
+        return societyService.editSocietyDetails(email,updatedSocietyModel);
     }
-
 }

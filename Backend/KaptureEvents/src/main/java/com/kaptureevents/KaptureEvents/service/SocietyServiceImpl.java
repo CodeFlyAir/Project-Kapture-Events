@@ -29,8 +29,8 @@
 
         //Getting society details from DB
         @Override
-        public ResponseEntity<Society> societyProfile(Long id) {
-            Optional<Society> societyOptional = societyRepository.findById(Long.valueOf(id));
+        public ResponseEntity<Society> societyProfile(String email) {
+            Optional<Society> societyOptional = societyRepository.findByEmailId(email);
 
             if(societyOptional.isPresent()){
                 Society society = societyOptional.get();
@@ -41,10 +41,10 @@
         }
 
         @Override
-        public ResponseEntity<Society> editSocietyDetails(Long id, SocietyModel updatedSocietyModel) {
+        public ResponseEntity<Society> editSocietyDetails(String email, SocietyModel updatedSocietyModel) {
 
             //Retrieve existing student from database
-            Society existingSociety = societyRepository.findById(id).orElse(null);
+            Society existingSociety = societyRepository.findByEmailId(email).orElse(null);
             if(existingSociety ==  null){
                 //returning not found response if society not found
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 public interface SocietyService {
     void registerSociety(SocietyModel societyModel);
 
-    ResponseEntity<Society> societyProfile(Long id);
+    ResponseEntity<Society> societyProfile(String email);
 
-    ResponseEntity<Society> editSocietyDetails(Long id, SocietyModel updatedSocietyModel);
+    ResponseEntity<Society> editSocietyDetails(String email, SocietyModel updatedSocietyModel);
 }
