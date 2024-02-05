@@ -21,23 +21,23 @@ import java.util.Optional;
 public class Student {
     @Id
     @Email(message = "Invalid Email Format")
-    @NotBlank(message = "Email field should not be blank")
+//    @NotBlank(message = "Email field should not be blank")
     @NotNull(message = "Email field should not be null")
     private String email;
 
-    @NotBlank(message = "Roll field should not be blank")
+//    @NotBlank(message = "Roll field should not be blank")
     @NotNull(message = "Roll field should not be null")
     private Long roll;
 
     @NotNull
-    @NotBlank
+//    @NotBlank
     private String firstName;
     private String lastName;
 
-    @Pattern(regexp = "\\d+",message = "Only numeric values are allowed")
+//    @Pattern(regexp = "\\d+",message = "Only numeric values are allowed")
     private Long contact;
 
-    @Pattern(regexp = "^[MF]$", message = "Gender must be 'M' or 'F'")
+//    @Pattern(regexp = "^[MF]$", message = "Gender must be 'M' or 'F'")
     private Character gender;
 
     @ElementCollection
