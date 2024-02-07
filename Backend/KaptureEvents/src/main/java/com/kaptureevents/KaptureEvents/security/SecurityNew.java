@@ -32,9 +32,10 @@ public class SecurityNew  {
         // Configure OAuth 2.0 login with the success handler
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/student/registration").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(authorize -> {
+                            authorize.requestMatchers("/**").permitAll();
+                            authorize.anyRequest().authenticated();
+                        }
                 )
                 .oauth2Login(oauth2Login -> {
                     oauth2Login
