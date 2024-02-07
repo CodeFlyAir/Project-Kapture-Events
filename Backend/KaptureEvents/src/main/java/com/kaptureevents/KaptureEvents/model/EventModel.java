@@ -5,12 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class SocietyModel {
-    //private Long id;
+@AllArgsConstructor
+public class EventModel {
+
+    private Date startDate;
+    private Date endDate;
     private Long contact;
-    private String emailId;
-    private String societyName;
+    private String description;
+    private String additionalDetails;
 }

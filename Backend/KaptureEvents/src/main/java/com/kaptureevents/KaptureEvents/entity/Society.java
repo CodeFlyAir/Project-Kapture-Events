@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 //@Table(name = "society")
@@ -15,8 +17,13 @@ public class Society {
 
     @NotNull
     private Long contact;
+
+    @Column(name = "email_id", nullable = false, unique = true)
     private String emailId;
     private String societyName;
+
+    @ElementCollection
+    private List<String> events;
 
     public Society(SocietyModel updatedSocietyModel){
         this.contact=updatedSocietyModel.getContact();
