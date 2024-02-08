@@ -45,4 +45,10 @@ public class SocietyController {
                                                         @RequestBody SocietyModel updatedSocietyModel){
         return societyService.editSocietyDetails(email,updatedSocietyModel);
     }
+
+
+    @DeleteMapping("/profile/delete/{email}")
+    public ResponseEntity<Boolean> deleteSociety(@PathVariable String email){
+        return societyService.deleteSociety(email);
+    }
 }

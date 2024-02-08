@@ -66,4 +66,12 @@ public class StudentServiceImpl implements StudentService{
 
     }
 
+    @Override
+    public ResponseEntity<Boolean> deleteStudent(String email) {
+        if (studentRepository.existsById(email)) {
+            studentRepository.deleteById(email);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

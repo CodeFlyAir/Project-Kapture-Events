@@ -10,4 +10,6 @@ public interface StudentService {
     ResponseEntity<Student> studentProfile(String email);
 
     ResponseEntity<Student> editStudentDetails(String email, StudentModel updatedStudentModel);
+
+    ResponseEntity<Boolean> deleteStudent(String email);
 }
