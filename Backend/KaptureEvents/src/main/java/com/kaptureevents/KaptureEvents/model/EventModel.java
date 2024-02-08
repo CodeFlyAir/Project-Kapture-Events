@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,4 +18,10 @@ public class EventModel {
     private Long contact;
     private String description;
     private String additionalDetails;
+
+    private List<String> sponsors;
+    private List<SpecialGuestModel> specialGuest;
+    private List<SubEventsModel> subEvent;
+    private List<UpdateModel> updates;
+    private List<EventStatusModel> eventStatus;
 }
