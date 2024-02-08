@@ -42,4 +42,13 @@ public class StudentController {
                                                              @RequestBody StudentModel updatedStudentModel) {
         return studentService.editStudentDetails(email, updatedStudentModel);
     }
+
+
+    //TODO : Remove email from Path Variable and get it from
+    // Spring Security for currently logged in user
+    @DeleteMapping("/profile/delete/{email}")
+    public ResponseEntity<Boolean> deleteStudent(@PathVariable String email){
+        return studentService.deleteStudent(email);
+    }
+
 }

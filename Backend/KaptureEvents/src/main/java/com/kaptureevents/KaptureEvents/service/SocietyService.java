@@ -10,4 +10,6 @@ public interface SocietyService {
     ResponseEntity<Society> societyProfile(String email);
 
     ResponseEntity<Society> editSocietyDetails(String email, SocietyModel updatedSocietyModel);
+
+    ResponseEntity<Boolean> deleteSociety(String email);
 }

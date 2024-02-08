@@ -60,6 +60,16 @@
             return new ResponseEntity<>(new Society(updatedSocietyModel),HttpStatus.OK);
         }
 
+        @Override
+        public ResponseEntity<Boolean> deleteSociety(String email) {
+            Optional<Society> society=societyRepository.findByEmailId(email);
+            if (society.isPresent()) {
+                societyRepository.deleteById(society.get().getId());
+                return ResponseEntity.ok(true);
+            }
+            return ResponseEntity.notFound().build();
+        }
+
 
     }
 
