@@ -22,11 +22,15 @@ public class Events {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long eventId;
+    private long event_id;
 
-    private List<String> sponsors;
     private Date startDate;
     private Date endDate;
+    private Long contact;
+    private String description;
+    private String additionalDetails;
+
+    private List<String> sponsors;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<SpecialGuestModel> specialGuest;
@@ -35,15 +39,11 @@ public class Events {
             targetEntity = Society.class,
             cascade = CascadeType.ALL
     )
-    @JoinColumn(name = "id", nullable = false)
-    private Long societyId;
-
-    private Long contact;
-    private String description;
-    private String additionalDetails;
+   @JoinColumn(name = "id", nullable = false)
+   private Society societyId;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "sub_events", nullable = false, unique = true)
+    @Column(name = "sub_events")
     private List<SubEventsModel> subEvent;
 
     @JdbcTypeCode(SqlTypes.JSON)
