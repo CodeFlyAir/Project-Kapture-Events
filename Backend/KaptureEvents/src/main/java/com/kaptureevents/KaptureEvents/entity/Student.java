@@ -6,7 +6,11 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
+
+import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,14 +22,26 @@ import java.util.Optional;
 @NoArgsConstructor
 public class Student {
     @Id
-    @Email
+    @Email(message = "Invalid Email Format")
+//    @NotBlank(message = "Email field should not be blank")
+    @NotNull(message = "Email field should not be null")
     private String email;
-    @NotNull
+
+//    @NotBlank(message = "Roll field should not be blank")
+    @NotNull(message = "Roll field should not be null")
     private Long roll;
+
+    @NotNull
+//    @NotBlank
     private String firstName;
     private String lastName;
+
+//    @Pattern(regexp = "\\d+",message = "Only numeric values are allowed")
     private Long contact;
+
+//    @Pattern(regexp = "^[MF]$", message = "Gender must be 'M' or 'F'")
     private Character gender;
+
     @ElementCollection
     private List<String> eventId;
 

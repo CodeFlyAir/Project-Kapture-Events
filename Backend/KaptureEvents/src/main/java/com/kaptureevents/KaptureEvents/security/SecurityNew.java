@@ -37,10 +37,8 @@ public class SecurityNew  {
                             authorize.anyRequest().authenticated();
                         }
                 )
-                .oauth2Login(oauth2Login -> {
-                    oauth2Login
-                            .successHandler(new CustomAuthenticationSuccessHandler());
-                });
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .successHandler(new CustomAuthenticationSuccessHandler()));
 
 
         return http.build();
