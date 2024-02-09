@@ -10,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -19,8 +20,10 @@ public class Events {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long event_id;
+    private UUID event_id;
 
+    @Column(nullable = false,unique = true)
+    private String name;
     private Date startDate;
     private Date endDate;
     private String description;
@@ -37,8 +40,8 @@ public class Events {
             targetEntity = Society.class,
             cascade = CascadeType.ALL
     )
-   @JoinColumn(name = "id", nullable = false)
-   private Society societyId;
+    @JoinColumn(nullable = false,referencedColumnName = "id")
+    private Society societyId;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "sub_events")

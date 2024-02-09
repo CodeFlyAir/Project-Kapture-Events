@@ -7,6 +7,7 @@ import com.kaptureevents.KaptureEvents.model.EventModel;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +36,14 @@ public class EventServiceImpl implements EventService{
         Events events = new Events();
 
         //setting the accepted event details to Events object
+        events.setName(eventModel.getName());
         events.setStartDate(eventModel.getStartDate());
         events.setEndDate(eventModel.getEndDate());
         events.setContact(eventModel.getContact());
         events.setDescription(eventModel.getDescription());
         events.setAdditionalDetails(eventModel.getAdditionalDetails());
         events.setSocietyId(societyId);
+        //events.setId(eventModel.g);
         events.setSponsors(eventModel.getSponsors());
         events.setSpecialGuest(eventModel.getSpecialGuest());
         events.setSubEvent(eventModel.getSubEvent());
@@ -55,4 +58,18 @@ public class EventServiceImpl implements EventService{
 
         return null;
     }
+
+    //get event from DB
+    @Override
+    public ResponseEntity<Events> eventProfile(String name) {
+
+        Optional<Events> eventsOptional = eventRepository.findByName(name);
+        if(eventsOptional.isPresent()){
+            Events events = eventsOptional.get();
+            return new ResponseEntity<>(events,HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

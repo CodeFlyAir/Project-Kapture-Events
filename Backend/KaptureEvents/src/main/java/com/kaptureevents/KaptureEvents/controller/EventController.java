@@ -49,4 +49,10 @@ public class EventController {
         }
         return ResponseEntity.badRequest().build();
     }
+
+    //Get event from DB
+    @GetMapping("/profile/{name}")
+    private ResponseEntity<Events> eventProfile(@PathVariable String name){
+        return eventService.eventProfile(name);
+    }
 }

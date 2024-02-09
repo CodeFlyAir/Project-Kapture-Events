@@ -9,4 +9,6 @@ public interface EventService {
     ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId);
 
     ResponseEntity<EventContactModel> addEventContact(EventContactModel eventContact, String eventName);
+
+    ResponseEntity<Events> eventProfile(String name);
 }

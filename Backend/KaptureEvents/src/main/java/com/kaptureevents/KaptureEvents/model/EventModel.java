@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class EventModel {
 
+    private String name;
     private Date startDate;
     private Date endDate;
     private List<EventContactModel> contact;
