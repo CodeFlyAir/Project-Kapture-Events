@@ -27,7 +27,7 @@ public class Student {
     @NotNull(message = "Email field should not be null")
     private String email;
 
-//    @NotBlank(message = "Roll field should not be blank")
+    //    @NotBlank(message = "Roll field should not be blank")
     @NotNull(message = "Roll field should not be null")
     private Long roll;
 
@@ -36,10 +36,10 @@ public class Student {
     private String firstName;
     private String lastName;
 
-//    @Pattern(regexp = "\\d+",message = "Only numeric values are allowed")
+    //    @Pattern(regexp = "\\d+",message = "Only numeric values are allowed")
     private Long contact;
 
-//    @Pattern(regexp = "^[MF]$", message = "Gender must be 'M' or 'F'")
+    //    @Pattern(regexp = "^[MF]$", message = "Gender must be 'M' or 'F'")
     private Character gender;
 
     @ElementCollection
