@@ -39,7 +39,7 @@ public class StudentController {
     // Spring Security for currently logged in user
     @PutMapping("/profile/edit/{email}")
     public ResponseEntity<Student> updateStudentDetails(@PathVariable String email,
-                                                             @RequestBody StudentModel updatedStudentModel) {
+                                                        @RequestBody StudentModel updatedStudentModel) {
         return studentService.editStudentDetails(email, updatedStudentModel);
     }
 

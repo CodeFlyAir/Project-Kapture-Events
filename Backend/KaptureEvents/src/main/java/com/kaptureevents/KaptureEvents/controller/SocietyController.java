@@ -27,7 +27,7 @@ public class SocietyController {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-           return "Society Registration Failed";
+        return "Society Registration Failed";
     }
 
     //ToDo: Remove the id from path variable and get it
@@ -35,7 +35,7 @@ public class SocietyController {
 
     @GetMapping("/profile/{email}")
     private ResponseEntity<Society> societyProfile(@PathVariable String email){
-            return societyService.societyProfile(email);
+        return societyService.societyProfile(email);
     }
 
     //ToDo: Remove id from Path Variable and get it from
