@@ -1,9 +1,6 @@
 package com.kaptureevents.KaptureEvents.entity;
 
-import com.kaptureevents.KaptureEvents.model.EventStatusModel;
-import com.kaptureevents.KaptureEvents.model.SpecialGuestModel;
-import com.kaptureevents.KaptureEvents.model.SubEventsModel;
-import com.kaptureevents.KaptureEvents.model.UpdateModel;
+import com.kaptureevents.KaptureEvents.model.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,11 +23,12 @@ public class Events {
 
     private Date startDate;
     private Date endDate;
-    private Long contact;
     private String description;
     private String additionalDetails;
 
     private List<String> sponsors;
+
+    private List<EventContactModel> contact;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<SpecialGuestModel> specialGuest;

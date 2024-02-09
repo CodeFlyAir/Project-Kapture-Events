@@ -2,6 +2,7 @@ package com.kaptureevents.KaptureEvents.service;
 
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Society;
+import com.kaptureevents.KaptureEvents.model.EventContactModel;
 import com.kaptureevents.KaptureEvents.model.EventModel;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
@@ -47,5 +48,11 @@ public class EventServiceImpl implements EventService{
         events.setEventStatus(eventModel.getEventStatus());
 
         return ResponseEntity.ok(eventRepository.save(events));
+    }
+
+    @Override
+    public ResponseEntity<EventContactModel> addEventContact(EventContactModel eventContact, String eventName) {
+
+        return null;
     }
 }

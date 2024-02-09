@@ -15,7 +15,7 @@ public class EventModel {
 
     private Date startDate;
     private Date endDate;
-    private Long contact;
+    private List<EventContactModel> contact;
     private String description;
     private String additionalDetails;
 
