@@ -13,4 +13,6 @@ public interface EventService {
             EventContactModel eventContact, String eventName, MultipartFile file);
 
     ResponseEntity<Events> eventProfile(String name);
+
+    ResponseEntity<Events> deleteEventContact(String eventName, Long contact);
 }

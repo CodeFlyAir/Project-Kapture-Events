@@ -62,6 +62,18 @@ public class EventServiceImpl implements EventService {
         return ResponseEntity.ok(eventRepository.save(events));
     }
 
+    //get event from DB
+    @Override
+    public ResponseEntity<Events> eventProfile(String name) {
+        Optional<Events> eventsOptional = eventRepository.findByName(name);
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+            return new ResponseEntity<>(events, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @Override
     public ResponseEntity<Events> addEventContact(
             EventContactModel eventContactModel, String eventName, MultipartFile file) {
@@ -98,17 +110,42 @@ public class EventServiceImpl implements EventService {
         return ResponseEntity.notFound().build();
     }
 
-    //get event from DB
     @Override
-    public ResponseEntity<Events> eventProfile(String name) {
+    public ResponseEntity<Events> deleteEventContact(String eventName, Long contactNumber) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
 
-        Optional<Events> eventsOptional = eventRepository.findByName(name);
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
-            return new ResponseEntity<>(events, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
+            // Get the list of contacts from the event
+            List<EventContactModel> contactList = events.getContact();
+
+            if (contactList != null) {
+                Optional<EventContactModel> contactToRemoveOptional = contactList.stream()
+                        .filter(contact -> contact.getContact().equals(contactNumber))
+                        .findFirst();
+
+                if (contactToRemoveOptional.isPresent() &&
+                        dataBucketUtil.deleteFile(
+                                contactToRemoveOptional
+                                        .get()
+                                        .getImage()
+                                        .getFileName())) {
+                    contactList.remove(contactToRemoveOptional.get());
+                    events.setContact(contactList);
+
+                    return ResponseEntity.ok(eventRepository.save(events));
+                } else {
+                    return ResponseEntity.status(
+                                    new ErrorResponse("Unable to Delete", HttpStatus.NOT_FOUND)
+                                            .getStatus())
+                            .body(null);
+                }
+            }
+        }
+        return ResponseEntity.status(
+                        new ErrorResponse("Event Not Present", HttpStatus.BAD_REQUEST)
+                                .getStatus())
+                .body(null);
+    }
 }

@@ -49,4 +49,15 @@ public class DataBucketUtil {
             return null;
         }
     }
+
+    public boolean deleteFile(String fileName) {
+        try {
+            BlobId blobId = BlobId.of(bucketName, fileName);
+            Storage storage = StorageOptions.getDefaultInstance().getService();
+            return storage.delete(blobId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+    }
 }

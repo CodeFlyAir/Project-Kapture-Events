@@ -42,20 +42,33 @@ public class EventController {
     //Add Contact Details to an event
     @PostMapping("/{eventName}/addContact")
     public ResponseEntity<Events> addEventContact(
-            @RequestPart(value = "imageFile")MultipartFile imageFile,
+            @RequestPart(value = "imageFile") MultipartFile imageFile,
             @RequestPart(value = "jsonData") EventContactModel eventContact,
             @PathVariable String eventName) {
         try {
-           return eventService.addEventContact(eventContact,eventName, imageFile);
-        }catch (Exception e){
+            return eventService.addEventContact(eventContact, eventName, imageFile);
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.badRequest().build();
     }
 
+    @DeleteMapping("/{eventName}/deleteContact/{contact}")
+    public ResponseEntity<Events> deleteEventContact(
+            @PathVariable("eventName") String eventName,
+            @PathVariable("contact") Long contact) {
+        try {
+            return eventService.deleteEventContact(eventName, contact);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+
     //Get event from DB
     @GetMapping("/profile/{name}")
-    private ResponseEntity<Events> eventProfile(@PathVariable String name){
+    private ResponseEntity<Events> eventProfile(@PathVariable String name) {
         return eventService.eventProfile(name);
     }
 }
