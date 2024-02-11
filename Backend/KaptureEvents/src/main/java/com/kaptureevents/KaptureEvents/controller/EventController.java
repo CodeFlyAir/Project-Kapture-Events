@@ -10,22 +10,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j
 @RequestMapping("/events")
 public class EventController {
 
+    @Autowired
+    private EventService eventService;
+
     UserModel userModel = UserModel.getInstance();
 
     @GetMapping("/events")
     public String getEvents() {
         return userModel.getName();
-
     }
 
-    @Autowired
-    private EventService eventService;
 
     //Event registration
     @PostMapping("/register/{emailId}")
@@ -38,12 +39,14 @@ public class EventController {
         return ResponseEntity.badRequest().build();
     }
 
+    //Add Contact Details to an event
     @PostMapping("/{eventName}/addContact")
-    public ResponseEntity<EventContactModel> addEventContact(
-            @Valid @RequestBody EventContactModel eventContact,
+    public ResponseEntity<Events> addEventContact(
+            @RequestPart(value = "imageFile")MultipartFile imageFile,
+            @RequestPart(value = "jsonData") EventContactModel eventContact,
             @PathVariable String eventName) {
         try {
-            return eventService.addEventContact(eventContact,eventName);
+           return eventService.addEventContact(eventContact,eventName, imageFile);
         }catch (Exception e){
             log.error(e.getMessage());
         }

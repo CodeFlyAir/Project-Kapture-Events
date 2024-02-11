@@ -6,15 +6,23 @@ import com.kaptureevents.KaptureEvents.model.EventContactModel;
 import com.kaptureevents.KaptureEvents.model.EventModel;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
+import com.kaptureevents.KaptureEvents.utils.DataBucketUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
-public class EventServiceImpl implements EventService{
+@Slf4j
+public class EventServiceImpl implements EventService {
 
     @Autowired
     private EventRepository eventRepository;
@@ -22,13 +30,16 @@ public class EventServiceImpl implements EventService{
     @Autowired
     private SocietyRepository societyRepository;
 
+    @Autowired
+    private DataBucketUtil dataBucketUtil;
+
     //saving event to DB
     @Override
     public ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId) {
         Society societyId;
         Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
 
-        if(societyOptional.isPresent())
+        if (societyOptional.isPresent())
             societyId = societyOptional.get();
         else
             return ResponseEntity.notFound().build();
@@ -43,7 +54,6 @@ public class EventServiceImpl implements EventService{
         events.setDescription(eventModel.getDescription());
         events.setAdditionalDetails(eventModel.getAdditionalDetails());
         events.setSocietyId(societyId);
-        //events.setId(eventModel.g);
         events.setSponsors(eventModel.getSponsors());
         events.setSpecialGuest(eventModel.getSpecialGuest());
         events.setSubEvent(eventModel.getSubEvent());
@@ -54,9 +64,32 @@ public class EventServiceImpl implements EventService{
     }
 
     @Override
-    public ResponseEntity<EventContactModel> addEventContact(EventContactModel eventContact, String eventName) {
+    public ResponseEntity<Events> addEventContact(
+            EventContactModel eventContactModel, String eventName, MultipartFile file) {
+        UUID eventId;
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
 
-        return null;
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+            eventId = events.getEvent_id();
+
+            List<EventContactModel> contactList = events.getContact();
+
+            if (contactList == null) {
+                contactList = new ArrayList<>();
+            }
+            log.info("Before Upload");
+            eventContactModel.setImage(dataBucketUtil.uploadFile(file));
+            log.info("After Upload");
+
+            contactList.add(eventContactModel);
+
+            // Update the contact list in the Events object
+            events.setContact(contactList);
+
+            return ResponseEntity.ok(eventRepository.save(events));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     //get event from DB
@@ -64,10 +97,10 @@ public class EventServiceImpl implements EventService{
     public ResponseEntity<Events> eventProfile(String name) {
 
         Optional<Events> eventsOptional = eventRepository.findByName(name);
-        if(eventsOptional.isPresent()){
+        if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
-            return new ResponseEntity<>(events,HttpStatus.OK);
-        }else{
+            return new ResponseEntity<>(events, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

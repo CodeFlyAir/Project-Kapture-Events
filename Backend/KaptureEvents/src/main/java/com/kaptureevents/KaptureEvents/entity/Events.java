@@ -22,7 +22,7 @@ public class Events {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID event_id;
 
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String name;
     private Date startDate;
     private Date endDate;
@@ -31,6 +31,7 @@ public class Events {
 
     private List<String> sponsors;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<EventContactModel> contact;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -40,7 +41,7 @@ public class Events {
             targetEntity = Society.class,
             cascade = CascadeType.ALL
     )
-    @JoinColumn(nullable = false,referencedColumnName = "id")
+    @JoinColumn(nullable = false, referencedColumnName = "id")
     private Society societyId;
 
     @JdbcTypeCode(SqlTypes.JSON)

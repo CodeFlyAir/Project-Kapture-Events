@@ -1,5 +1,6 @@
 package com.kaptureevents.KaptureEvents.model;
 
+import com.kaptureevents.KaptureEvents.dto.FileDto;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,5 +15,5 @@ public class EventContactModel {
     private Long contact;
     @Email
     private String email;
-    private String imageBase64;
+    private FileDto image;
 }
