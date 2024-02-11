@@ -7,8 +7,8 @@ import com.kaptureevents.KaptureEvents.model.EventModel;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
 import com.kaptureevents.KaptureEvents.utils.DataBucketUtil;
+import com.kaptureevents.KaptureEvents.utils.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -66,18 +65,25 @@ public class EventServiceImpl implements EventService {
     @Override
     public ResponseEntity<Events> addEventContact(
             EventContactModel eventContactModel, String eventName, MultipartFile file) {
-        UUID eventId;
         Optional<Events> eventsOptional = eventRepository.findByName(eventName);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
-            eventId = events.getEvent_id();
 
             List<EventContactModel> contactList = events.getContact();
 
             if (contactList == null) {
                 contactList = new ArrayList<>();
             }
+            // Check if the contact number already exists in the list
+            boolean isDuplicate = contactList.stream()
+                    .anyMatch(contact -> contact.getContact().equals(eventContactModel.getContact()));
+
+            if (isDuplicate) {
+                ErrorResponse errorResponse = new ErrorResponse("Duplicate contact number", HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(errorResponse.getStatus()).body(events);
+            }
+
             log.info("Before Upload");
             eventContactModel.setImage(dataBucketUtil.uploadFile(file));
             log.info("After Upload");
