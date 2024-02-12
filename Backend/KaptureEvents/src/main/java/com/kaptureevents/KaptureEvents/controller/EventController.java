@@ -81,4 +81,10 @@ public class EventController {
     private ResponseEntity<Events> additionalDetails(){
 
     }
+
+    //Delete from DB
+    @DeleteMapping("/profile/delete/{name}")
+    public ResponseEntity<Boolean> deleteEvent(@PathVariable String name){
+        return eventService.deleteEvent(name);
+    }
 }

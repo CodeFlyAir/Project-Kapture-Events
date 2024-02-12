@@ -13,13 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+
 @Slf4j
 public class EventServiceImpl implements EventService {
 
@@ -73,6 +80,7 @@ public class EventServiceImpl implements EventService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
     @Override
     public ResponseEntity<Events> addEventContact(
@@ -147,5 +155,18 @@ public class EventServiceImpl implements EventService {
                         new ErrorResponse("Event Not Present", HttpStatus.BAD_REQUEST)
                                 .getStatus())
                 .body(null);
+    }
+  
+    //delete from DB
+    @Override
+    public ResponseEntity<Boolean> deleteEvent(String name) {
+        UUID eventId;
+        Optional<Events> events=eventRepository.findByName(name);
+        if(events.isPresent()){
+            eventId = events.get().getEvent_id();
+            eventRepository.deleteById(eventId);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.notFound().build();
     }
 }

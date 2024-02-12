@@ -15,4 +15,6 @@ public interface EventService {
     ResponseEntity<Events> eventProfile(String name);
 
     ResponseEntity<Events> deleteEventContact(String eventName, Long contact);
+
+    ResponseEntity<Boolean> deleteEvent(String name);
 }

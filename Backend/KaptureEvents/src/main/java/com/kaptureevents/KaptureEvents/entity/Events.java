@@ -39,7 +39,7 @@ public class Events {
 
     @ManyToOne(
             targetEntity = Society.class,
-            cascade = CascadeType.ALL
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}
     )
     @JoinColumn(nullable = false, referencedColumnName = "id")
     private Society societyId;
@@ -54,4 +54,5 @@ public class Events {
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<EventStatusModel> eventStatus;
+
 }
