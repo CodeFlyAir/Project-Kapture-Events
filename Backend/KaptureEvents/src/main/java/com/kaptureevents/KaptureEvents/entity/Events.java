@@ -27,7 +27,7 @@ public class Events {
     private Date startDate;
     private Date endDate;
     private String description;
-    private String additionalDetails;
+    private EventAdditionalDetailsModel additionalDetails;
 
     private List<String> sponsors;
 

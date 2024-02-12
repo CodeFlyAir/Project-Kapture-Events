@@ -18,7 +18,7 @@ public class EventModel {
     private Date endDate;
     private List<EventContactModel> contact;
     private String description;
-    private String additionalDetails;
+    private EventAdditionalDetailsModel additionalDetails;
 
     private List<String> sponsors;
     private List<SpecialGuestModel> specialGuest;

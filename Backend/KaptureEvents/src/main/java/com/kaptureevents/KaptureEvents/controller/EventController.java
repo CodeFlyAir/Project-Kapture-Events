@@ -69,6 +69,16 @@ public class EventController {
     //Get event from DB
     @GetMapping("/profile/{name}")
     private ResponseEntity<Events> eventProfile(@PathVariable String name) {
+        try {
         return eventService.eventProfile(name);
+        }catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/{eventName}/edit-additional-details")
+    private ResponseEntity<Events> additionalDetails(){
+
     }
 }
