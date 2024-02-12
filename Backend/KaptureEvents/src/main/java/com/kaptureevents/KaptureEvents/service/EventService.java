@@ -8,4 +8,6 @@ public interface EventService {
     ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId);
 
     ResponseEntity<Events> eventProfile(String name);
+
+    ResponseEntity<Boolean> deleteEvent(String name);
 }

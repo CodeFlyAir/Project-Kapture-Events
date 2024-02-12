@@ -42,4 +42,10 @@ public class EventController {
     private ResponseEntity<Events> eventProfile(@PathVariable String name){
         return eventService.eventProfile(name);
     }
+
+    //Delete from DB
+    @DeleteMapping("/profile/delete/{name}")
+    public ResponseEntity<Boolean> deleteEvent(@PathVariable String name){
+        return eventService.deleteEvent(name);
+    }
 }

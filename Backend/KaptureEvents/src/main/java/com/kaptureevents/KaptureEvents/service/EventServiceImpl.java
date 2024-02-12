@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EventServiceImpl implements EventService{
-
     @Autowired
     private EventRepository eventRepository;
 
@@ -65,6 +67,18 @@ public class EventServiceImpl implements EventService{
         }
     }
 
+    //delete from DB
+    @Override
+    public ResponseEntity<Boolean> deleteEvent(String name) {
+        UUID eventId;
+        Optional<Events> events=eventRepository.findByName(name);
+        if(events.isPresent()){
+            eventId = events.get().getEvent_id();
+            eventRepository.deleteById(eventId);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 
 }
