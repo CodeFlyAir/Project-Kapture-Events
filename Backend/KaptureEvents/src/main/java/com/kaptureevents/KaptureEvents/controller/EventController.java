@@ -137,4 +137,26 @@ public class EventController {
     public ResponseEntity<Boolean> deleteEvent(@PathVariable String eventName) {
         return eventService.deleteEvent(eventName);
     }
+
+    @PostMapping("/{eventName}/add-sponsor")
+    private ResponseEntity<Events> addSponsor(@PathVariable String eventName,
+                                                     @RequestPart("image") MultipartFile file){
+        try{
+            return eventService.addSponsor(eventName,file);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @DeleteMapping("/{eventName}/delete-sponsor/{fileName}")
+    private ResponseEntity<Events> deleteSponsor(@PathVariable("eventName") String eventName,
+                                                 @PathVariable("fileName") String fileName){
+        try{
+            return eventService.deleteSponsor(eventName,fileName);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
 }

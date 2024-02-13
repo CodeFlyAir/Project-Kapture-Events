@@ -31,7 +31,8 @@ public class Events {
     @JdbcTypeCode(SqlTypes.JSON)
     private EventAdditionalDetailsModel additionalDetails;
 
-    private List<String> sponsors;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<SponsorsModel> sponsors;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<EventContactModel> contact;

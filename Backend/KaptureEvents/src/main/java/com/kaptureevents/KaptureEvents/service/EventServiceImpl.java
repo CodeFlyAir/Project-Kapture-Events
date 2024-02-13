@@ -6,6 +6,7 @@ import com.kaptureevents.KaptureEvents.entity.Society;
 import com.kaptureevents.KaptureEvents.model.EventAdditionalDetailsModel;
 import com.kaptureevents.KaptureEvents.model.EventContactModel;
 import com.kaptureevents.KaptureEvents.model.EventModel;
+import com.kaptureevents.KaptureEvents.model.SponsorsModel;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
 import com.kaptureevents.KaptureEvents.utils.DataBucketUtil;
@@ -61,6 +62,7 @@ public class EventServiceImpl implements EventService {
         events.setEventStatus(eventModel.getEventStatus());
         events.setAdditionalDetails(new EventAdditionalDetailsModel());
         events.setContact(new ArrayList<>());
+        events.setSponsors(new ArrayList<>());
 
         return ResponseEntity.ok(eventRepository.save(events));
     }
@@ -273,6 +275,64 @@ public class EventServiceImpl implements EventService {
                         additionalDetails.setResources(resources);
                         events.setAdditionalDetails(additionalDetails);
 
+                        eventRepository.save(events);
+
+                        return ResponseEntity.ok(events);
+                    } else {
+                        return ResponseEntity.internalServerError().build();
+                    }
+                }
+            }
+
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<Events> addSponsor(String eventName, MultipartFile file) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+            List<SponsorsModel> sponsors=events.getSponsors();
+
+            if (sponsors == null) {
+                sponsors = new ArrayList<>();
+            }
+
+            SponsorsModel sponsorsModel=new SponsorsModel();
+            sponsorsModel.setSponsor(dataBucketUtil.uploadFile(file));
+            sponsors.add(sponsorsModel);
+
+            events.setSponsors(sponsors);
+
+            return ResponseEntity.ok(eventRepository.save(events));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<Events> deleteSponsor(String eventName, String fileName) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+            List<SponsorsModel> sponsorsModel=events.getSponsors();
+
+            if (sponsorsModel == null) {
+                return ResponseEntity.internalServerError().build();
+            }
+
+            Iterator<SponsorsModel> iterator = sponsorsModel.iterator();
+            while (iterator.hasNext()) {
+                FileDto fileDto = iterator.next().getSponsor();
+                if (fileDto.getFileName().equals(fileName)) {
+                    if (dataBucketUtil.deleteFile(fileName)) {
+                        iterator.remove();
+
+                        events.setSponsors(sponsorsModel);
                         eventRepository.save(events);
 
                         return ResponseEntity.ok(events);
