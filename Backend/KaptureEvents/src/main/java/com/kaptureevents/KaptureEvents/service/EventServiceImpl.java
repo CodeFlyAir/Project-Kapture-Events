@@ -1,7 +1,9 @@
 package com.kaptureevents.KaptureEvents.service;
 
+import com.kaptureevents.KaptureEvents.dto.FileDto;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Society;
+import com.kaptureevents.KaptureEvents.model.EventAdditionalDetailsModel;
 import com.kaptureevents.KaptureEvents.model.EventContactModel;
 import com.kaptureevents.KaptureEvents.model.EventModel;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
@@ -13,17 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 
@@ -65,6 +59,8 @@ public class EventServiceImpl implements EventService {
         events.setSubEvent(eventModel.getSubEvent());
         events.setUpdates(eventModel.getUpdates());
         events.setEventStatus(eventModel.getEventStatus());
+        events.setAdditionalDetails(new EventAdditionalDetailsModel());
+        events.setContact(new ArrayList<>());
 
         return ResponseEntity.ok(eventRepository.save(events));
     }
@@ -156,17 +152,140 @@ public class EventServiceImpl implements EventService {
                                 .getStatus())
                 .body(null);
     }
-  
+
     //delete from DB
     @Override
     public ResponseEntity<Boolean> deleteEvent(String name) {
         UUID eventId;
-        Optional<Events> events=eventRepository.findByName(name);
-        if(events.isPresent()){
+        Optional<Events> events = eventRepository.findByName(name);
+        if (events.isPresent()) {
             eventId = events.get().getEvent_id();
             eventRepository.deleteById(eventId);
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.notFound().build();
     }
+
+    @Override
+    public ResponseEntity<String> editTeamFormationGuidelines(String name, String guidelines) {
+        Optional<Events> eventsOptional = eventRepository.findByName(name);
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+
+            EventAdditionalDetailsModel additionalDetails = events.getAdditionalDetails();
+
+            if (additionalDetails == null)
+                additionalDetails = new EventAdditionalDetailsModel();
+
+            additionalDetails.setTeamFormationGuidelines(guidelines);
+            events.setAdditionalDetails(additionalDetails);
+
+            eventRepository.save(events);
+            return ResponseEntity.ok(guidelines);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<String> editRewards(String eventName, String rewards) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+
+            EventAdditionalDetailsModel additionalDetails = events.getAdditionalDetails();
+
+            if (additionalDetails == null)
+                additionalDetails = new EventAdditionalDetailsModel();
+
+            additionalDetails.setRewards(rewards);
+            events.setAdditionalDetails(additionalDetails);
+
+            eventRepository.save(events);
+            return ResponseEntity.ok(rewards);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<String> editEligibilityCriteria(String eventName, String eligibilityCriteria) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+
+            EventAdditionalDetailsModel additionalDetails = events.getAdditionalDetails();
+
+            if (additionalDetails == null)
+                additionalDetails = new EventAdditionalDetailsModel();
+
+            additionalDetails.setEligibilityCriteria(eligibilityCriteria);
+            events.setAdditionalDetails(additionalDetails);
+
+            eventRepository.save(events);
+            return ResponseEntity.ok(eligibilityCriteria);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<Events> addResource(String eventName, MultipartFile file) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+            EventAdditionalDetailsModel additionalDetails = events.getAdditionalDetails();
+
+            List<FileDto> resources = additionalDetails.getResources();
+
+            if (resources == null) {
+                resources = new ArrayList<>();
+            }
+
+            resources.add(dataBucketUtil.uploadFile(file));
+            additionalDetails.setResources(resources);
+            events.setAdditionalDetails(additionalDetails);
+
+            return ResponseEntity.ok(eventRepository.save(events));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<Events> deleteResource(String eventName, String fileName) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+            EventAdditionalDetailsModel additionalDetails = events.getAdditionalDetails();
+
+            List<FileDto> resources = additionalDetails.getResources();
+
+            if (resources == null) {
+                return ResponseEntity.internalServerError().build();
+            }
+
+            Iterator<FileDto> iterator = resources.iterator();
+            while (iterator.hasNext()) {
+                FileDto fileDto = iterator.next();
+                if (fileDto.getFileName().equals(fileName)) {
+                    if (dataBucketUtil.deleteFile(fileName)) {
+                        iterator.remove();
+
+                        additionalDetails.setResources(resources);
+                        events.setAdditionalDetails(additionalDetails);
+
+                        eventRepository.save(events);
+
+                        return ResponseEntity.ok(events);
+                    } else {
+                        return ResponseEntity.internalServerError().build();
+                    }
+                }
+            }
+
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
 }

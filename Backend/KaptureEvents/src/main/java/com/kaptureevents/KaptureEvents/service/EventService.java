@@ -17,4 +17,14 @@ public interface EventService {
     ResponseEntity<Events> deleteEventContact(String eventName, Long contact);
 
     ResponseEntity<Boolean> deleteEvent(String name);
+
+    ResponseEntity<String> editTeamFormationGuidelines(String name, String guidelines);
+
+    ResponseEntity<String> editRewards(String eventName, String rewards);
+
+    ResponseEntity<String> editEligibilityCriteria(String eventName, String eligibilityCriteria);
+
+    ResponseEntity<Events> addResource(String eventName, MultipartFile file);
+
+    ResponseEntity<Events> deleteResource(String eventName, String fileName);
 }

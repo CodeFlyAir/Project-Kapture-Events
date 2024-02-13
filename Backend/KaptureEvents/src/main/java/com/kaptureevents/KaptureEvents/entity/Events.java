@@ -27,6 +27,8 @@ public class Events {
     private Date startDate;
     private Date endDate;
     private String description;
+
+    @JdbcTypeCode(SqlTypes.JSON)
     private EventAdditionalDetailsModel additionalDetails;
 
     private List<String> sponsors;
