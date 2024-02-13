@@ -22,7 +22,7 @@ public class EventController {
 
     UserModel userModel = UserModel.getInstance();
 
-    @GetMapping("/events")
+    @GetMapping("/")
     public String getEvents() {
         return userModel.getName();
     }
@@ -67,14 +67,74 @@ public class EventController {
 
 
     //Get event from DB
-    @GetMapping("/profile/{name}")
+    @GetMapping("/{eventName}")
     private ResponseEntity<Events> eventProfile(@PathVariable String name) {
-        return eventService.eventProfile(name);
+        try {
+            return eventService.eventProfile(name);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/{eventName}/edit-team-formation-guidelines")
+    private ResponseEntity<String> editTeamFormationGuidelines(@PathVariable String eventName,
+                                                               @RequestBody String guidelines) {
+        try {
+            return eventService.editTeamFormationGuidelines(eventName, guidelines);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/{eventName}/edit-rewards")
+    private ResponseEntity<String> editRewards(@PathVariable String eventName,
+                                               @RequestBody String rewards) {
+        try {
+            return eventService.editRewards(eventName, rewards);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/{eventName}/edit-eligibility-criteria")
+    private ResponseEntity<String> editEligibilityCriteria(@PathVariable String eventName,
+                                                           @RequestBody String eligibilityCriteria) {
+        try {
+            return eventService.editEligibilityCriteria(eventName, eligibilityCriteria);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/{eventName}/add-resource")
+    private ResponseEntity<Events> addResource(@PathVariable String eventName,
+                                               @RequestPart(value = "imageFile") MultipartFile file) {
+        try {
+            return eventService.addResource(eventName, file);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @DeleteMapping("/{eventName}/delete-resource/{fileName}")
+    private ResponseEntity<Events> deleteResource(@PathVariable("eventName") String eventName,
+                                                  @PathVariable("fileName") String fileName) {
+        try {
+            return eventService.deleteResource(eventName, fileName);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
     }
 
     //Delete from DB
-    @DeleteMapping("/profile/delete/{name}")
-    public ResponseEntity<Boolean> deleteEvent(@PathVariable String name){
-        return eventService.deleteEvent(name);
+    @DeleteMapping("/delete/{eventName}")
+    public ResponseEntity<Boolean> deleteEvent(@PathVariable String eventName) {
+        return eventService.deleteEvent(eventName);
     }
 }
