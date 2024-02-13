@@ -20,7 +20,7 @@ public class EventModel {
     private String description;
     private EventAdditionalDetailsModel additionalDetails;
 
-    private List<String> sponsors;
+    private List<SponsorsModel> sponsors;
     private List<SpecialGuestModel> specialGuest;
     private List<SubEventsModel> subEvent;
     private List<UpdateModel> updates;
