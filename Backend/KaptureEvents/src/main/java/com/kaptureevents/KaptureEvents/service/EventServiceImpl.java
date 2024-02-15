@@ -3,10 +3,7 @@ package com.kaptureevents.KaptureEvents.service;
 import com.kaptureevents.KaptureEvents.dto.FileDto;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Society;
-import com.kaptureevents.KaptureEvents.model.EventAdditionalDetailsModel;
-import com.kaptureevents.KaptureEvents.model.EventContactModel;
-import com.kaptureevents.KaptureEvents.model.EventModel;
-import com.kaptureevents.KaptureEvents.model.SponsorsModel;
+import com.kaptureevents.KaptureEvents.model.*;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
 import com.kaptureevents.KaptureEvents.utils.DataBucketUtil;
@@ -63,6 +60,7 @@ public class EventServiceImpl implements EventService {
         events.setAdditionalDetails(new EventAdditionalDetailsModel());
         events.setContact(new ArrayList<>());
         events.setSponsors(new ArrayList<>());
+        events.setSpecialGuest(new ArrayList<>());
 
         return ResponseEntity.ok(eventRepository.save(events));
     }
@@ -94,17 +92,17 @@ public class EventServiceImpl implements EventService {
                 contactList = new ArrayList<>();
             }
             // Check if the contact number already exists in the list
-            boolean isDuplicate = contactList.stream()
-                    .anyMatch(contact -> contact.getContact().equals(eventContactModel.getContact()));
-
-            if (isDuplicate) {
-                ErrorResponse errorResponse = new ErrorResponse("Duplicate contact number", HttpStatus.BAD_REQUEST);
-                return ResponseEntity.status(errorResponse.getStatus()).body(events);
+            if (contactList.stream()
+                    .anyMatch(contact -> contact.getContact()
+                            .equals(eventContactModel.getContact()))) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
             }
 
-            log.info("Before Upload");
-            eventContactModel.setImage(dataBucketUtil.uploadFile(file));
-            log.info("After Upload");
+            try {
+                eventContactModel.setImage(dataBucketUtil.uploadFile(file));
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
+            }
 
             contactList.add(eventContactModel);
 
@@ -131,21 +129,25 @@ public class EventServiceImpl implements EventService {
                         .filter(contact -> contact.getContact().equals(contactNumber))
                         .findFirst();
 
-                if (contactToRemoveOptional.isPresent() &&
-                        dataBucketUtil.deleteFile(
-                                contactToRemoveOptional
-                                        .get()
-                                        .getImage()
-                                        .getFileName())) {
-                    contactList.remove(contactToRemoveOptional.get());
-                    events.setContact(contactList);
+                try {
+                    if (contactToRemoveOptional.isPresent() &&
+                            dataBucketUtil.deleteFile(
+                                    contactToRemoveOptional
+                                            .get()
+                                            .getImage()
+                                            .getFileName())) {
+                        contactList.remove(contactToRemoveOptional.get());
+                        events.setContact(contactList);
 
-                    return ResponseEntity.ok(eventRepository.save(events));
-                } else {
-                    return ResponseEntity.status(
-                                    new ErrorResponse("Unable to Delete", HttpStatus.NOT_FOUND)
-                                            .getStatus())
-                            .body(null);
+                        return ResponseEntity.ok(eventRepository.save(events));
+                    } else {
+                        return ResponseEntity.status(
+                                        new ErrorResponse("Unable to Delete", HttpStatus.NOT_FOUND)
+                                                .getStatus())
+                                .body(null);
+                    }
+                } catch (Exception e) {
+                    return ResponseEntity.internalServerError().build();
                 }
             }
         }
@@ -242,7 +244,12 @@ public class EventServiceImpl implements EventService {
                 resources = new ArrayList<>();
             }
 
-            resources.add(dataBucketUtil.uploadFile(file));
+            try {
+                resources.add(dataBucketUtil.uploadFile(file));
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
+            }
+
             additionalDetails.setResources(resources);
             events.setAdditionalDetails(additionalDetails);
 
@@ -269,16 +276,20 @@ public class EventServiceImpl implements EventService {
             while (iterator.hasNext()) {
                 FileDto fileDto = iterator.next();
                 if (fileDto.getFileName().equals(fileName)) {
-                    if (dataBucketUtil.deleteFile(fileName)) {
-                        iterator.remove();
+                    try {
+                        if (dataBucketUtil.deleteFile(fileName)) {
+                            iterator.remove();
 
-                        additionalDetails.setResources(resources);
-                        events.setAdditionalDetails(additionalDetails);
+                            additionalDetails.setResources(resources);
+                            events.setAdditionalDetails(additionalDetails);
 
-                        eventRepository.save(events);
+                            eventRepository.save(events);
 
-                        return ResponseEntity.ok(events);
-                    } else {
+                            return ResponseEntity.ok(events);
+                        } else {
+                            return ResponseEntity.internalServerError().build();
+                        }
+                    } catch (Exception e) {
                         return ResponseEntity.internalServerError().build();
                     }
                 }
@@ -296,14 +307,20 @@ public class EventServiceImpl implements EventService {
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
-            List<SponsorsModel> sponsors=events.getSponsors();
+            List<SponsorsModel> sponsors = events.getSponsors();
 
             if (sponsors == null) {
                 sponsors = new ArrayList<>();
             }
 
-            SponsorsModel sponsorsModel=new SponsorsModel();
-            sponsorsModel.setSponsor(dataBucketUtil.uploadFile(file));
+            SponsorsModel sponsorsModel = new SponsorsModel();
+
+            try {
+                sponsorsModel.setSponsor(dataBucketUtil.uploadFile(file));
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
+            }
+
             sponsors.add(sponsorsModel);
 
             events.setSponsors(sponsors);
@@ -319,7 +336,7 @@ public class EventServiceImpl implements EventService {
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
-            List<SponsorsModel> sponsorsModel=events.getSponsors();
+            List<SponsorsModel> sponsorsModel = events.getSponsors();
 
             if (sponsorsModel == null) {
                 return ResponseEntity.internalServerError().build();
@@ -329,14 +346,18 @@ public class EventServiceImpl implements EventService {
             while (iterator.hasNext()) {
                 FileDto fileDto = iterator.next().getSponsor();
                 if (fileDto.getFileName().equals(fileName)) {
-                    if (dataBucketUtil.deleteFile(fileName)) {
-                        iterator.remove();
+                    try {
+                        if (dataBucketUtil.deleteFile(fileName)) {
+                            iterator.remove();
 
-                        events.setSponsors(sponsorsModel);
-                        eventRepository.save(events);
+                            events.setSponsors(sponsorsModel);
+                            eventRepository.save(events);
 
-                        return ResponseEntity.ok(events);
-                    } else {
+                            return ResponseEntity.ok(events);
+                        } else {
+                            return ResponseEntity.internalServerError().build();
+                        }
+                    } catch (Exception e) {
                         return ResponseEntity.internalServerError().build();
                     }
                 }
@@ -345,6 +366,38 @@ public class EventServiceImpl implements EventService {
             return ResponseEntity.notFound().build();
         }
 
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<Events> addSpecialGuest(String eventName, SpecialGuestModel specialGuestModel, MultipartFile image) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+
+            List<SpecialGuestModel> specialGuestModelList = events.getSpecialGuest();
+            if (specialGuestModelList == null) {
+                specialGuestModelList = new ArrayList<>();
+            }
+
+            // Check if the special guest already exists in the list
+            if (specialGuestModelList.stream()
+                    .anyMatch(guest -> guest.getName()
+                            .equals(specialGuestModel.getName()))) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+
+            try {
+                specialGuestModel.setImage(dataBucketUtil.uploadFile(image));
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
+            }
+            specialGuestModelList.add(specialGuestModel);
+            events.setSpecialGuest(specialGuestModelList);
+
+            return ResponseEntity.ok(eventRepository.save(events));
+        }
         return ResponseEntity.notFound().build();
     }
 

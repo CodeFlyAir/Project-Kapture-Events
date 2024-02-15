@@ -3,6 +3,7 @@ package com.kaptureevents.KaptureEvents.controller;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.model.EventContactModel;
 import com.kaptureevents.KaptureEvents.model.EventModel;
+import com.kaptureevents.KaptureEvents.model.SpecialGuestModel;
 import com.kaptureevents.KaptureEvents.model.UserModel;
 import com.kaptureevents.KaptureEvents.service.EventService;
 import jakarta.validation.Valid;
@@ -140,10 +141,10 @@ public class EventController {
 
     @PostMapping("/{eventName}/add-sponsor")
     private ResponseEntity<Events> addSponsor(@PathVariable String eventName,
-                                                     @RequestPart("image") MultipartFile file){
-        try{
-            return eventService.addSponsor(eventName,file);
-        }catch (Exception e){
+                                              @RequestPart("image") MultipartFile file) {
+        try {
+            return eventService.addSponsor(eventName, file);
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
@@ -151,12 +152,26 @@ public class EventController {
 
     @DeleteMapping("/{eventName}/delete-sponsor/{fileName}")
     private ResponseEntity<Events> deleteSponsor(@PathVariable("eventName") String eventName,
-                                                 @PathVariable("fileName") String fileName){
-        try{
-            return eventService.deleteSponsor(eventName,fileName);
-        }catch (Exception e){
+                                                 @PathVariable("fileName") String fileName) {
+        try {
+            return eventService.deleteSponsor(eventName, fileName);
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }
+
+    @PostMapping("/{eventName}/add-special-guest")
+    private ResponseEntity<Events> addSpecialGuest(
+            @PathVariable String eventName,
+            @RequestPart("jsonData") SpecialGuestModel specialGuestModel,
+            @RequestPart("image") MultipartFile image) {
+        try {
+            return eventService.addSpecialGuest(eventName, specialGuestModel, image);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
 }
