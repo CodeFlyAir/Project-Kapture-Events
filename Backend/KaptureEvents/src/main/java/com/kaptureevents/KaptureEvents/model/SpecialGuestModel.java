@@ -1,5 +1,6 @@
 package com.kaptureevents.KaptureEvents.model;
 
+import com.kaptureevents.KaptureEvents.dto.FileDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecialGuestModel {
-    private String imageUrl;
+    private FileDto image;
     private String name;
     private String post;
     private Date date;
