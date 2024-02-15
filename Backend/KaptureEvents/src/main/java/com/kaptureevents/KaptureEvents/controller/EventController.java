@@ -174,4 +174,15 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
+    @DeleteMapping("/{eventName}/delete-special-guest")
+    private ResponseEntity<Events> deleteSpecialGuest(@PathVariable("eventName") String eventName,
+                                                      @RequestBody SpecialGuestModel specialGuestModel) {
+        try {
+            return eventService.deleteSpecialGuest(eventName, specialGuestModel);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
 }

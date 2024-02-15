@@ -339,7 +339,7 @@ public class EventServiceImpl implements EventService {
             List<SponsorsModel> sponsorsModel = events.getSponsors();
 
             if (sponsorsModel == null) {
-                return ResponseEntity.internalServerError().build();
+                return ResponseEntity.noContent().build();
             }
 
             Iterator<SponsorsModel> iterator = sponsorsModel.iterator();
@@ -397,6 +397,42 @@ public class EventServiceImpl implements EventService {
             events.setSpecialGuest(specialGuestModelList);
 
             return ResponseEntity.ok(eventRepository.save(events));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<Events> deleteSpecialGuest(String eventName, SpecialGuestModel specialGuestModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+
+        if (eventsOptional.isPresent()) {
+            Events events = eventsOptional.get();
+            List<SpecialGuestModel> specialGuestModelList = events.getSpecialGuest();
+
+            if (specialGuestModelList == null) {
+                return ResponseEntity.noContent().build();
+            }
+
+            Iterator<SpecialGuestModel> iterator = specialGuestModelList.iterator();
+            while (iterator.hasNext()) {
+                SpecialGuestModel guestModel = iterator.next();
+                if (guestModel.equals(specialGuestModel)) {
+                    try {
+                        if (dataBucketUtil.deleteFile(guestModel.getImage().getFileName())) {
+                            iterator.remove();
+
+                            events.setSpecialGuest(specialGuestModelList);
+                            eventRepository.save(events);
+
+                            return ResponseEntity.ok(events);
+                        } else {
+                            return ResponseEntity.internalServerError().build();
+                        }
+                    } catch (Exception e) {
+                        return ResponseEntity.internalServerError().build();
+                    }
+                }
+            }
         }
         return ResponseEntity.notFound().build();
     }
