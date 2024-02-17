@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Date;
 import java.util.*;
 
 @Service
@@ -30,6 +31,57 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private DataBucketUtil dataBucketUtil;
+
+    @Override
+    public ResponseEntity<List<Events>> getEvents() {
+        try {
+            return ResponseEntity.ok(eventRepository.findAll());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<Events>> getEventsWithFilter(String filters) {
+        try {
+            Date date = new Date(System.currentTimeMillis());
+
+            if ("today".equalsIgnoreCase(filters)) {
+                return eventRepository.findByStartDateEquals(date)
+                        .map(ResponseEntity::ok)
+                        .orElseGet(() -> ResponseEntity.noContent().build());
+                
+            } else if ("tomorrow".equalsIgnoreCase(filters)) {
+               java.util.Date utilDate = new java.util.Date(date.getTime());
+
+                Calendar calendar = Calendar.getInstance(); // Current Instance
+                calendar.setTime(utilDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 1); // Add 1 day to current date
+                
+                date = new java.sql.Date(calendar.getTime().getTime());
+                return eventRepository.findByStartDateEquals(date)
+                        .map(ResponseEntity::ok)
+                        .orElseGet(() -> ResponseEntity.noContent().build());
+                
+            } else if ("this-month".equalsIgnoreCase(filters)) {
+                Calendar endOfMonth = Calendar.getInstance();
+                endOfMonth.set(Calendar.DAY_OF_MONTH, endOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH));
+                Date endDate = new Date(endOfMonth.getTimeInMillis());
+
+                return eventRepository.findByStartDateBetween(date, endDate)
+                        .map(ResponseEntity::ok).
+                        orElseGet(() -> ResponseEntity.noContent().build());
+
+            }else {
+                return ResponseEntity.badRequest().build();
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
     //saving event to DB
     @Override
@@ -436,5 +488,4 @@ public class EventServiceImpl implements EventService {
         }
         return ResponseEntity.notFound().build();
     }
-
 }

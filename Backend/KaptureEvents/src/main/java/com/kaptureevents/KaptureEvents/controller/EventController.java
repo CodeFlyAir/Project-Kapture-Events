@@ -9,9 +9,12 @@ import com.kaptureevents.KaptureEvents.service.EventService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -23,9 +26,18 @@ public class EventController {
 
     UserModel userModel = UserModel.getInstance();
 
-    @GetMapping("/")
-    public String getEvents() {
-        return userModel.getName();
+    @GetMapping("")
+    public ResponseEntity<List<Events>> getEvents(@RequestParam(required = false) String filters) {
+        try {
+            if (filters != null) {
+                return eventService.getEventsWithFilter(filters);
+            } else {
+                return eventService.getEvents();
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 
@@ -36,8 +48,8 @@ public class EventController {
             return eventService.registerEvents(eventModel, emailId);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.badRequest().build();
     }
 
     //Add Contact Details to an event
@@ -51,7 +63,7 @@ public class EventController {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @DeleteMapping("/{eventName}/deleteContact/{contact}")
@@ -63,7 +75,7 @@ public class EventController {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
 
@@ -75,7 +87,7 @@ public class EventController {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @PostMapping("/{eventName}/edit-team-formation-guidelines")
@@ -86,7 +98,7 @@ public class EventController {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @PostMapping("/{eventName}/edit-rewards")
