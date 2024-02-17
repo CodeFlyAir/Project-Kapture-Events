@@ -7,6 +7,8 @@ import com.kaptureevents.KaptureEvents.model.SpecialGuestModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface EventService {
     ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId);
 
@@ -36,4 +38,8 @@ public interface EventService {
     ResponseEntity<Events> addSpecialGuest(String eventName, SpecialGuestModel specialGuestModel, MultipartFile image);
 
     ResponseEntity<Events> deleteSpecialGuest(String eventName, SpecialGuestModel specialGuestModel);
+
+    ResponseEntity<List<Events>> getEvents();
+
+    ResponseEntity<List<Events>> getEventsWithFilter(String filters);
 }
