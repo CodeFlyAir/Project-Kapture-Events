@@ -66,6 +66,7 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+    // Delete Event Contact
     @DeleteMapping("/{eventName}/deleteContact/{contact}")
     public ResponseEntity<Events> deleteEventContact(
             @PathVariable("eventName") String eventName,
@@ -90,6 +91,7 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+    // Edit Team Formation Guidelines
     @PostMapping("/{eventName}/edit-team-formation-guidelines")
     private ResponseEntity<String> editTeamFormationGuidelines(@PathVariable String eventName,
                                                                @RequestBody String guidelines) {
@@ -101,6 +103,7 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+    // Edit Rewards
     @PostMapping("/{eventName}/edit-rewards")
     private ResponseEntity<String> editRewards(@PathVariable String eventName,
                                                @RequestBody String rewards) {
@@ -112,6 +115,7 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
+    // Edit Eligibility Criteria
     @PostMapping("/{eventName}/edit-eligibility-criteria")
     private ResponseEntity<String> editEligibilityCriteria(@PathVariable String eventName,
                                                            @RequestBody String eligibilityCriteria) {
@@ -123,6 +127,7 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
+    // Add Downloadable Resource
     @PostMapping("/{eventName}/add-resource")
     private ResponseEntity<Events> addResource(@PathVariable String eventName,
                                                @RequestPart(value = "imageFile") MultipartFile file) {
@@ -134,6 +139,7 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
+    // Delete Resource
     @DeleteMapping("/{eventName}/delete-resource/{fileName}")
     private ResponseEntity<Events> deleteResource(@PathVariable("eventName") String eventName,
                                                   @PathVariable("fileName") String fileName) {
