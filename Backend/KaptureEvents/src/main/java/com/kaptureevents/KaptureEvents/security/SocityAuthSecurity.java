@@ -1,29 +1,26 @@
 package com.kaptureevents.KaptureEvents.security;
 
-import com.kaptureevents.KaptureEvents.handler.CustomAuthenticationSuccessHandler;
-import com.kaptureevents.KaptureEvents.model.UserModel;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
-@Configuration
-@Slf4j
-@EnableWebSecurity
-public class SecurityNew  {
-    private UserModel userModel;
+public class SocityAuthSecurity {
+    private UserDetailsService societyAuthUserDetailsService;
+    private JWTAuthEntryPoint authEntryPoint;
 
-
-
+    public SocityAuthSecurity(UserDetailsService societyAuthUserDetailsService, JWTAuthEntryPoint authEntryPoint) {
+        this.societyAuthUserDetailsService = societyAuthUserDetailsService;
+        this.authEntryPoint = authEntryPoint;
+    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
@@ -34,20 +31,23 @@ public class SecurityNew  {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> {
 
-                            authorize.requestMatchers("/**").permitAll();
-
+                           // authorize.requestMatchers("/**").permitAll();
+                            authorize.requestMatchers(HttpMethod.POST, "/api/path/register").permitAll();
+                            authorize.requestMatchers(HttpMethod.POST, "/api/path/login").permitAll();
 
 
                             authorize.anyRequest().authenticated();
 
                         }
-                )
 
-                .oauth2Login(oauth2Login -> oauth2Login
-                        .successHandler(new CustomAuthenticationSuccessHandler()));
+                );
+
 
         return http.build();
     }
+
+
+
     @Bean
     public AuthenticationManager authenticationManager(
 
@@ -60,5 +60,6 @@ public class SecurityNew  {
         return new BCryptPasswordEncoder();
     }
 }
+
 
 
