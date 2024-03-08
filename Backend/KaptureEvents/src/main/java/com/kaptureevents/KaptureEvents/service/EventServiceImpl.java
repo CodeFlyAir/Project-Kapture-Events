@@ -93,9 +93,6 @@ public class EventServiceImpl implements EventService {
         else
             return ResponseEntity.notFound().build();
 
-//        Events events = new Events();
-//        events.setName(subEventsModel.getName());
-//        events.setDescription(subEventsModel.getDesc());
         List<SubEventsModel> subEventsModelList = new ArrayList<>();
         subEventsModelList = events.getSubEvent();
          SubEventsModel subEventsModel1 = new SubEventsModel();
@@ -110,6 +107,34 @@ public class EventServiceImpl implements EventService {
          events.setSubEvent(subEventsModelList);
          return ResponseEntity.ok(eventRepository.save(events));
     }
+
+    @Override
+    public ResponseEntity<Events> deleteSubEvent(String eventName, SubEventsModel subEventsModel) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Events> addUpdate(String eventName, UpdateModel updateModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+
+        List<UpdateModel> updateModelList = new ArrayList<>();
+        updateModelList = events.getUpdates();
+        UpdateModel updateModel1 = new UpdateModel();
+
+        updateModel1.setDate(updateModel.getDate());
+        updateModel1.setMessage(updateModel.getMessage());
+
+        updateModelList.add(updateModel1);
+        events.setUpdates(updateModelList);
+        return ResponseEntity.ok(eventRepository.save(events));
+    }
+
 
     //saving event to DB
     @Override

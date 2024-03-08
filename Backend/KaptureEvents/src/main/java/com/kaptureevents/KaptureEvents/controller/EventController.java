@@ -194,29 +194,7 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
-//    @PostMapping("/register/{emailId}")
-//    public ResponseEntity<Events> registerEvents(@Valid @RequestBody EventModel eventModel, @PathVariable String emailId) {
-//        try {
-//            return eventService.registerEvents(eventModel, emailId);
-//        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
-
-//    @PostMapping("/{eventName}/add-special-guest")
-//    private ResponseEntity<Events> addSpecialGuest(
-//            @PathVariable String eventName,
-//            @RequestPart("jsonData") SpecialGuestModel specialGuestModel,
-//            @RequestPart("image") MultipartFile image) {
-//        try {
-//            return eventService.addSpecialGuest(eventName, specialGuestModel, image);
-//        } catch (Exception e) {
-//            log.error(e.getMessage());
-//        }
-//        return ResponseEntity.internalServerError().build();
-//    }
-
+    // adding a new sub event
     @PostMapping("/{eventName}/add-new-sub-event")
     private ResponseEntity<Events> addNewSubEvent( @Valid
             @PathVariable String eventName,
@@ -229,5 +207,30 @@ public class EventController {
         }
         return ResponseEntity.internalServerError().build();
     }
+
+    @PostMapping("/{eventName}/important-updates")
+    private ResponseEntity<Events> addUpdate(@Valid
+                                             @PathVariable String eventName,
+                                             @RequestBody UpdateModel updateModel){
+        try{
+            return eventService.addUpdate(eventName,updateModel);
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+    //delete sub event
+    private ResponseEntity<Events> deleteSubEvent(@PathVariable("eventName") String eventName,
+                                                  @RequestBody SubEventsModel subEventsModel){
+        try{
+            return eventService.deleteSubEvent(eventName,subEventsModel);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+
+
 
 }
