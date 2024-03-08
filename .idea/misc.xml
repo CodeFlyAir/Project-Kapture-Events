@@ -24,6 +24,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/Backend/KaptureEvents/pom.xml" />
+        <option value="$PROJECT_DIR$/KaptureEvents/pom.xml" />
       </list>
     </option>
   </component>
