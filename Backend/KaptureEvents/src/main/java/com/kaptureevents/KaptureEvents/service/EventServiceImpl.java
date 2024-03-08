@@ -83,6 +83,34 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
+    public ResponseEntity<Events> addNewSubEvent(String eventName, SubEventsModel subEventsModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+
+//        Events events = new Events();
+//        events.setName(subEventsModel.getName());
+//        events.setDescription(subEventsModel.getDesc());
+        List<SubEventsModel> subEventsModelList = new ArrayList<>();
+        subEventsModelList = events.getSubEvent();
+         SubEventsModel subEventsModel1 = new SubEventsModel();
+
+         subEventsModel1.setName(subEventsModel.getName());
+         subEventsModel1.setDesc(subEventsModel.getDesc());
+         subEventsModel1.setDate(subEventsModel.getDate());
+         subEventsModel1.setTime(subEventsModel.getTime());
+         subEventsModel1.setVenue(subEventsModel.getVenue());
+
+         subEventsModelList.add(subEventsModel1);
+         events.setSubEvent(subEventsModelList);
+         return ResponseEntity.ok(eventRepository.save(events));
+    }
+
     //saving event to DB
     @Override
     public ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId) {

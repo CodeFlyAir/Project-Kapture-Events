@@ -1,10 +1,7 @@
 package com.kaptureevents.KaptureEvents.controller;
 
 import com.kaptureevents.KaptureEvents.entity.Events;
-import com.kaptureevents.KaptureEvents.model.EventContactModel;
-import com.kaptureevents.KaptureEvents.model.EventModel;
-import com.kaptureevents.KaptureEvents.model.SpecialGuestModel;
-import com.kaptureevents.KaptureEvents.model.UserModel;
+import com.kaptureevents.KaptureEvents.model.*;
 import com.kaptureevents.KaptureEvents.service.EventService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -192,6 +189,42 @@ public class EventController {
         try {
             return eventService.deleteSpecialGuest(eventName, specialGuestModel);
         } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+//    @PostMapping("/register/{emailId}")
+//    public ResponseEntity<Events> registerEvents(@Valid @RequestBody EventModel eventModel, @PathVariable String emailId) {
+//        try {
+//            return eventService.registerEvents(eventModel, emailId);
+//        } catch (Exception e) {
+//            log.error(e.getMessage(), e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
+//    @PostMapping("/{eventName}/add-special-guest")
+//    private ResponseEntity<Events> addSpecialGuest(
+//            @PathVariable String eventName,
+//            @RequestPart("jsonData") SpecialGuestModel specialGuestModel,
+//            @RequestPart("image") MultipartFile image) {
+//        try {
+//            return eventService.addSpecialGuest(eventName, specialGuestModel, image);
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//        }
+//        return ResponseEntity.internalServerError().build();
+//    }
+
+    @PostMapping("/{eventName}/add-new-sub-event")
+    private ResponseEntity<Events> addNewSubEvent( @Valid
+            @PathVariable String eventName,
+            @RequestBody SubEventsModel subEventsModel){
+
+        try{
+            return eventService.addNewSubEvent(eventName,subEventsModel);
+        } catch (Exception e){
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();

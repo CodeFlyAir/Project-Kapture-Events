@@ -4,6 +4,7 @@ import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.model.EventContactModel;
 import com.kaptureevents.KaptureEvents.model.EventModel;
 import com.kaptureevents.KaptureEvents.model.SpecialGuestModel;
+import com.kaptureevents.KaptureEvents.model.SubEventsModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,4 +43,6 @@ public interface EventService {
     ResponseEntity<List<Events>> getEvents();
 
     ResponseEntity<List<Events>> getEventsWithFilter(String filters);
+
+    ResponseEntity<Events> addNewSubEvent(String eventName, SubEventsModel subEventsModel);
 }
