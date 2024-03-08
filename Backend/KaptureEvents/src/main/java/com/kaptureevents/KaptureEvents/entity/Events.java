@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,9 +27,12 @@ public class Events {
     private Date startDate;
     private Date endDate;
     private String description;
-    private String additionalDetails;
 
-    private List<String> sponsors;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private EventAdditionalDetailsModel additionalDetails;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<SponsorsModel> sponsors;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<EventContactModel> contact;

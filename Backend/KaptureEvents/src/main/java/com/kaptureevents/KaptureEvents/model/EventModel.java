@@ -3,9 +3,8 @@ package com.kaptureevents.KaptureEvents.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 @Data
@@ -18,9 +17,9 @@ public class EventModel {
     private Date endDate;
     private List<EventContactModel> contact;
     private String description;
-    private String additionalDetails;
+    private EventAdditionalDetailsModel additionalDetails;
 
-    private List<String> sponsors;
+    private List<SponsorsModel> sponsors;
     private List<SpecialGuestModel> specialGuest;
     private List<SubEventsModel> subEvent;
     private List<UpdateModel> updates;

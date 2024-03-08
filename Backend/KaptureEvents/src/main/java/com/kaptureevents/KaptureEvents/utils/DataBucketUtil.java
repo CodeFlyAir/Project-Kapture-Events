@@ -2,11 +2,11 @@ package com.kaptureevents.KaptureEvents.utils;
 
 import com.google.cloud.storage.*;
 import com.kaptureevents.KaptureEvents.dto.FileDto;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -15,19 +15,21 @@ import java.util.UUID;
 public class DataBucketUtil {
     private final String bucketName;
 
-    public DataBucketUtil(@Value("${gcp.bucket.name}") String bucketName){
-        this.bucketName=bucketName;
+    public DataBucketUtil(@Value("${gcp.bucket.name}") String bucketName) {
+        this.bucketName = bucketName;
     }
 
     public FileDto uploadFile(MultipartFile file) {
         try {
             // Generate a unique file name
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            log.info("Bucket name : {}",bucketName);
-            log.info("File name : {}",fileName);;
+
+            log.info("Bucket name : {}", bucketName);
+            log.info("File name : {}", fileName);
             // Create a BlobId associated with the file name
             BlobId blobId = BlobId.of(bucketName, fileName);
             log.info("Got BlobId");
+
             // Upload the file to Google Cloud Storage
             Storage storage = StorageOptions.getDefaultInstance().getService();
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
