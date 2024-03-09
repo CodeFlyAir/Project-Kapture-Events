@@ -1,10 +1,7 @@
 package com.kaptureevents.KaptureEvents.controller;
 
 import com.kaptureevents.KaptureEvents.entity.Events;
-import com.kaptureevents.KaptureEvents.model.EventContactModel;
-import com.kaptureevents.KaptureEvents.model.EventModel;
-import com.kaptureevents.KaptureEvents.model.SpecialGuestModel;
-import com.kaptureevents.KaptureEvents.model.UserModel;
+import com.kaptureevents.KaptureEvents.model.*;
 import com.kaptureevents.KaptureEvents.service.EventService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -82,9 +79,9 @@ public class EventController {
 
     //Get event from DB
     @GetMapping("/{eventName}")
-    private ResponseEntity<Events> eventProfile(@PathVariable String name) {
+    private ResponseEntity<Events> eventProfile(@PathVariable String eventName) {
         try {
-            return eventService.eventProfile(name);
+            return eventService.eventProfile(eventName);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -202,5 +199,57 @@ public class EventController {
         }
         return ResponseEntity.internalServerError().build();
     }
+
+    // adding a new sub event
+    @PostMapping("/{eventName}/add-new-sub-event")
+    private ResponseEntity<Events> addNewSubEvent( @Valid
+            @PathVariable String eventName,
+            @RequestBody SubEventsModel subEventsModel){
+
+        try{
+            return eventService.addNewSubEvent(eventName,subEventsModel);
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/{eventName}/important-updates")
+    private ResponseEntity<Events> addUpdate(@Valid
+                                             @PathVariable String eventName,
+                                             @RequestBody UpdateModel updateModel){
+        try{
+            return eventService.addUpdate(eventName,updateModel);
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+    //delete sub event
+    @DeleteMapping("/{eventName}/delete-sub-event")
+    private ResponseEntity<Events> deleteSubEvent(@PathVariable("eventName") String eventName,
+                                                  @RequestBody SubEventsModel subEventsModel){
+        try{
+            return eventService.deleteSubEvent(eventName,subEventsModel);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    //post social media links
+    @PostMapping("/{eventName}/social-media-links")
+    private ResponseEntity<Events> addSocialMediaLinks(@Valid
+                                                       @PathVariable String eventName,
+                                                       @RequestBody SocialMediaLinksModel socialMediaLinksModel){
+        try{
+            return eventService.addSocialMediaLinks(eventName,socialMediaLinksModel);
+        }catch(Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+
 
 }
