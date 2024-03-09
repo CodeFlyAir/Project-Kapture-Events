@@ -83,6 +83,107 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
+    public ResponseEntity<Events> addNewSubEvent(String eventName, SubEventsModel subEventsModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+
+        List<SubEventsModel> subEventsModelList = new ArrayList<>();
+        subEventsModelList = events.getSubEvent();
+         SubEventsModel subEventsModel1 = new SubEventsModel();
+
+         subEventsModel1.setName(subEventsModel.getName());
+         subEventsModel1.setDesc(subEventsModel.getDesc());
+         subEventsModel1.setDate(subEventsModel.getDate());
+         subEventsModel1.setTime(subEventsModel.getTime());
+         subEventsModel1.setVenue(subEventsModel.getVenue());
+
+         subEventsModelList.add(subEventsModel1);
+         events.setSubEvent(subEventsModelList);
+         return ResponseEntity.ok(eventRepository.save(events));
+    }
+
+    @Override
+    public ResponseEntity<Events> deleteSubEvent(String eventName, SubEventsModel subEventsModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+
+        List<SubEventsModel> subEvents = new ArrayList<>();
+        subEvents =  events.getSubEvent();
+        try{
+            if (subEvents!=null){
+                Optional<SubEventsModel> subEventsModelOptional = subEvents.stream().filter(event -> event.getName().equals(subEventsModel.
+                        getName())).findFirst();
+                if(subEventsModelOptional.isPresent()){
+                    subEvents.remove(subEventsModelOptional.get());
+                    events.setSubEvent(subEvents);
+                    return ResponseEntity.ok(eventRepository.save(events));
+                }
+                else {
+                    return ResponseEntity.notFound().build();
+                }
+            }else{
+                return ResponseEntity.status(new ErrorResponse("No Sub Events Found",HttpStatus.NOT_FOUND).getStatus()).body(null);
+            }
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<Events> addUpdate(String eventName, UpdateModel updateModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+
+        List<UpdateModel> updateModelList = new ArrayList<>();
+        updateModelList = events.getUpdates();
+        UpdateModel updateModel1 = new UpdateModel();
+
+        updateModel1.setDate(updateModel.getDate());
+        updateModel1.setMessage(updateModel.getMessage());
+
+        updateModelList.add(updateModel1);
+        events.setUpdates(updateModelList);
+        return ResponseEntity.ok(eventRepository.save(events));
+    }
+
+    @Override
+    public ResponseEntity<Events> addSocialMediaLinks(String eventName, SocialMediaLinksModel socialMediaLinksModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+        SocialMediaLinksModel socialMediaLinks = new SocialMediaLinksModel();
+
+        socialMediaLinks.setInstagram(socialMediaLinksModel.getInstagram());
+        socialMediaLinks.setFacebook(socialMediaLinksModel.getFacebook());
+        socialMediaLinks.setOther(socialMediaLinksModel.getOther());
+
+        events.setSocialMedia(socialMediaLinksModel);
+        return ResponseEntity.ok(eventRepository.save(events));
+
+    }
+
+
     //saving event to DB
     @Override
     public ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId) {
@@ -113,6 +214,7 @@ public class EventServiceImpl implements EventService {
         events.setContact(new ArrayList<>());
         events.setSponsors(new ArrayList<>());
         events.setSpecialGuest(new ArrayList<>());
+        events.setSocialMedia(eventModel.getSocialMedia());
 
         return ResponseEntity.ok(eventRepository.save(events));
     }
