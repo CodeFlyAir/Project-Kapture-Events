@@ -59,6 +59,6 @@ public class Events {
     private List<EventStatusModel> eventStatus;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<SocialMediaLinksModel> socialMedia;
+    private SocialMediaLinksModel socialMedia;
 
 }

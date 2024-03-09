@@ -110,7 +110,35 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public ResponseEntity<Events> deleteSubEvent(String eventName, SubEventsModel subEventsModel) {
-        return null;
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+
+        List<SubEventsModel> subEvents = new ArrayList<>();
+        subEvents =  events.getSubEvent();
+        try{
+            if (subEvents!=null){
+                Optional<SubEventsModel> subEventsModelOptional = subEvents.stream().filter(event -> event.getName().equals(subEventsModel.
+                        getName())).findFirst();
+                if(subEventsModelOptional.isPresent()){
+                    subEvents.remove(subEventsModelOptional.get());
+                    events.setSubEvent(subEvents);
+                    return ResponseEntity.ok(eventRepository.save(events));
+                }
+                else {
+                    return ResponseEntity.notFound().build();
+                }
+            }else{
+                return ResponseEntity.status(new ErrorResponse("No Sub Events Found",HttpStatus.NOT_FOUND).getStatus()).body(null);
+            }
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @Override
@@ -144,16 +172,13 @@ public class EventServiceImpl implements EventService {
         }
         else
             return ResponseEntity.notFound().build();
-        List<SocialMediaLinksModel> socialMediaLinksModelList = new ArrayList<>();
-        socialMediaLinksModelList = events.getSocialMedia();
-        SocialMediaLinksModel socialMediaLinksModel1 = new SocialMediaLinksModel();
+        SocialMediaLinksModel socialMediaLinks = new SocialMediaLinksModel();
 
-        socialMediaLinksModel1.setInstagram(socialMediaLinksModel.getInstagram());
-        socialMediaLinksModel1.setFacebook(socialMediaLinksModel.getFacebook());
-        socialMediaLinksModel1.setOther(socialMediaLinksModel.getOther());
+        socialMediaLinks.setInstagram(socialMediaLinksModel.getInstagram());
+        socialMediaLinks.setFacebook(socialMediaLinksModel.getFacebook());
+        socialMediaLinks.setOther(socialMediaLinksModel.getOther());
 
-        socialMediaLinksModelList.add(socialMediaLinksModel1);
-        events.setSocialMedia(socialMediaLinksModelList);
+        events.setSocialMedia(socialMediaLinksModel);
         return ResponseEntity.ok(eventRepository.save(events));
 
     }
@@ -189,6 +214,7 @@ public class EventServiceImpl implements EventService {
         events.setContact(new ArrayList<>());
         events.setSponsors(new ArrayList<>());
         events.setSpecialGuest(new ArrayList<>());
+        events.setSocialMedia(eventModel.getSocialMedia());
 
         return ResponseEntity.ok(eventRepository.save(events));
     }

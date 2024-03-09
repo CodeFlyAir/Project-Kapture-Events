@@ -78,9 +78,9 @@ public class EventController {
 
     //Get event from DB
     @GetMapping("/{eventName}")
-    private ResponseEntity<Events> eventProfile(@PathVariable String name) {
+    private ResponseEntity<Events> eventProfile(@PathVariable String eventName) {
         try {
-            return eventService.eventProfile(name);
+            return eventService.eventProfile(eventName);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -220,6 +220,7 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
     //delete sub event
+    @DeleteMapping("/{eventName}/delete-sub-event")
     private ResponseEntity<Events> deleteSubEvent(@PathVariable("eventName") String eventName,
                                                   @RequestBody SubEventsModel subEventsModel){
         try{
@@ -236,7 +237,7 @@ public class EventController {
                                                        @PathVariable String eventName,
                                                        @RequestBody SocialMediaLinksModel socialMediaLinksModel){
         try{
-            eventService.addSocialMediaLinks(eventName,socialMediaLinksModel);
+            return eventService.addSocialMediaLinks(eventName,socialMediaLinksModel);
         }catch(Exception e){
             log.error(e.getMessage());
         }

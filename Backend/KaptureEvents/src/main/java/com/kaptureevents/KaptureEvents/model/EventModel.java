@@ -24,5 +24,5 @@ public class EventModel {
     private List<SubEventsModel> subEvent;
     private List<UpdateModel> updates;
     private List<EventStatusModel> eventStatus;
-    private List<SocialMediaLinksModel> socialMedia;
+    private SocialMediaLinksModel socialMedia;
 }
