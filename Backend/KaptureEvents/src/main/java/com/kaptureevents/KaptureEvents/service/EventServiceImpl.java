@@ -135,6 +135,29 @@ public class EventServiceImpl implements EventService {
         return ResponseEntity.ok(eventRepository.save(events));
     }
 
+    @Override
+    public ResponseEntity<Events> addSocialMediaLinks(String eventName, SocialMediaLinksModel socialMediaLinksModel) {
+        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+        Events events;
+        if (eventsOptional.isPresent()) {
+            events = eventsOptional.get();
+        }
+        else
+            return ResponseEntity.notFound().build();
+        List<SocialMediaLinksModel> socialMediaLinksModelList = new ArrayList<>();
+        socialMediaLinksModelList = events.getSocialMedia();
+        SocialMediaLinksModel socialMediaLinksModel1 = new SocialMediaLinksModel();
+
+        socialMediaLinksModel1.setInstagram(socialMediaLinksModel.getInstagram());
+        socialMediaLinksModel1.setFacebook(socialMediaLinksModel.getFacebook());
+        socialMediaLinksModel1.setOther(socialMediaLinksModel.getOther());
+
+        socialMediaLinksModelList.add(socialMediaLinksModel1);
+        events.setSocialMedia(socialMediaLinksModelList);
+        return ResponseEntity.ok(eventRepository.save(events));
+
+    }
+
 
     //saving event to DB
     @Override

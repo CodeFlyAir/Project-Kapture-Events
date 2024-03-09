@@ -230,6 +230,18 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
+    //post social media links
+    @PostMapping("/{eventName}/social-media-links")
+    private ResponseEntity<Events> addSocialMediaLinks(@Valid
+                                                       @PathVariable String eventName,
+                                                       @RequestBody SocialMediaLinksModel socialMediaLinksModel){
+        try{
+            eventService.addSocialMediaLinks(eventName,socialMediaLinksModel);
+        }catch(Exception e){
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
 
 
 

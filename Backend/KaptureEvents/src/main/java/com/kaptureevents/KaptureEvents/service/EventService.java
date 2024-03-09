@@ -46,4 +46,7 @@ public interface EventService {
     ResponseEntity<Events> deleteSubEvent(String eventName, SubEventsModel subEventsModel);
 
     ResponseEntity<Events> addUpdate(String eventName, UpdateModel updateModel);
+
+
+    ResponseEntity<Events> addSocialMediaLinks(String eventName, SocialMediaLinksModel socialMediaLinksModel);
 }
