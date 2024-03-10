@@ -1,5 +1,6 @@
 package com.kaptureevents.KaptureEvents.entity;
 
+import com.kaptureevents.KaptureEvents.dto.FileDto;
 import com.kaptureevents.KaptureEvents.model.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,11 @@ public class Events {
     private Date startDate;
     private Date endDate;
     private String description;
+    private String organizerName;
+
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private FileDto thumbnail;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private EventAdditionalDetailsModel additionalDetails;

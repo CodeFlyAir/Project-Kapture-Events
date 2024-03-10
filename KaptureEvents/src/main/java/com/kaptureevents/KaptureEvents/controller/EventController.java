@@ -24,12 +24,12 @@ public class EventController {
     UserModel userModel = UserModel.getInstance();
 
     @GetMapping("")
-    public ResponseEntity<List<Events>> getEvents(@RequestParam(required = false) String filters) {
+    public ResponseEntity<List<EventPreviewModel>> getEventsForHome(@RequestParam(required = false) String filters) {
         try {
             if (filters != null) {
-                return eventService.getEventsWithFilter(filters);
+                return eventService.getEventsForHomeWithFilter(filters);
             } else {
-                return eventService.getEvents();
+                return eventService.getEventsPreview();
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -37,12 +37,24 @@ public class EventController {
         }
     }
 
+    @GetMapping("/all-events")
+    public ResponseEntity<List<Events>> getAllEvents(){
+        try {
+            return eventService.getEvents();
+        }catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     //Event registration
     @PostMapping("/register/{emailId}")
-    public ResponseEntity<Events> registerEvents(@Valid @RequestBody EventModel eventModel, @PathVariable String emailId) {
+    public ResponseEntity<Events> registerEvents(
+            @Valid @RequestPart("jsonData") EventModel eventModel,
+            @RequestPart("thumbnail") MultipartFile thumbnail,
+            @PathVariable String emailId) {
         try {
-            return eventService.registerEvents(eventModel, emailId);
+            return eventService.registerEvents(eventModel, thumbnail, emailId);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

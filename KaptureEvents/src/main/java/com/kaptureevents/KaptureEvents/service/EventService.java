@@ -8,7 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface EventService {
-    ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId);
+    ResponseEntity<Events> registerEvents
+            (EventModel eventModel, MultipartFile thumbnail, String emailId);
 
     ResponseEntity<Events> addEventContact(
             EventContactModel eventContact, String eventName, MultipartFile file);
@@ -39,7 +40,9 @@ public interface EventService {
 
     ResponseEntity<List<Events>> getEvents();
 
-    ResponseEntity<List<Events>> getEventsWithFilter(String filters);
+    ResponseEntity<List<EventPreviewModel>> getEventsPreview();
+
+    ResponseEntity<List<EventPreviewModel>> getEventsForHomeWithFilter(String filters);
 
     ResponseEntity<Events> addNewSubEvent(String eventName, SubEventsModel subEventsModel);
 

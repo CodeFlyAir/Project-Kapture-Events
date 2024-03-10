@@ -43,37 +43,41 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<List<Events>> getEventsWithFilter(String filters) {
+    public ResponseEntity<List<EventPreviewModel>> getEventsPreview() {
+        try {
+            return ResponseEntity.ok(convertToEventPreviews(eventRepository.findAll()));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<EventPreviewModel>> getEventsForHomeWithFilter(String filters) {
         try {
             Date date = new Date(System.currentTimeMillis());
 
             if ("today".equalsIgnoreCase(filters)) {
-                return eventRepository.findByStartDateEquals(date)
-                        .map(ResponseEntity::ok)
-                        .orElseGet(() -> ResponseEntity.noContent().build());
-                
-            } else if ("tomorrow".equalsIgnoreCase(filters)) {
-               java.util.Date utilDate = new java.util.Date(date.getTime());
+                Optional<List<Events>> eventsOptional = eventRepository.findByStartDateEquals(date);
+                return responseHelper(eventsOptional);
 
-                Calendar calendar = Calendar.getInstance(); // Current Instance
+            } else if ("tomorrow".equalsIgnoreCase(filters)) {
+                java.util.Date utilDate = new java.util.Date(date.getTime());
+                Calendar calendar = Calendar.getInstance();
                 calendar.setTime(utilDate);
-                calendar.add(Calendar.DAY_OF_MONTH, 1); // Add 1 day to current date
-                
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
                 date = new java.sql.Date(calendar.getTime().getTime());
-                return eventRepository.findByStartDateEquals(date)
-                        .map(ResponseEntity::ok)
-                        .orElseGet(() -> ResponseEntity.noContent().build());
-                
+                Optional<List<Events>> eventsOptional = eventRepository.findByStartDateEquals(date);
+                return responseHelper(eventsOptional);
+
             } else if ("this-month".equalsIgnoreCase(filters)) {
                 Calendar endOfMonth = Calendar.getInstance();
                 endOfMonth.set(Calendar.DAY_OF_MONTH, endOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH));
                 Date endDate = new Date(endOfMonth.getTimeInMillis());
+                Optional<List<Events>> eventsOptional = eventRepository.findByStartDateBetween(date, endDate);
+                return responseHelper(eventsOptional);
 
-                return eventRepository.findByStartDateBetween(date, endDate)
-                        .map(ResponseEntity::ok).
-                        orElseGet(() -> ResponseEntity.noContent().build());
-
-            }else {
+            } else {
                 return ResponseEntity.badRequest().build();
             }
 
@@ -83,29 +87,59 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private ResponseEntity<List<EventPreviewModel>> responseHelper(Optional<List<Events>> eventsOptional) {
+        if (eventsOptional.isPresent()) {
+            List<Events> events = eventsOptional.get();
+            if (events.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                List<EventPreviewModel> eventPreviews = convertToEventPreviews(events);
+                return ResponseEntity.ok(eventPreviews);
+            }
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    private List<EventPreviewModel> convertToEventPreviews(List<Events> events) {
+        List<EventPreviewModel> eventPreviews = new ArrayList<>();
+        for (Events event : events) {
+            EventPreviewModel eventPreview = new EventPreviewModel(
+                    event.getEvent_id(),
+                    event.getName(),
+                    event.getStartDate(),
+                    event.getEndDate(),
+                    event.getOrganizerName(),
+                    event.getThumbnail()
+            );
+            eventPreviews.add(eventPreview);
+        }
+        return eventPreviews;
+    }
+
+
     @Override
     public ResponseEntity<Events> addNewSubEvent(String eventName, SubEventsModel subEventsModel) {
         Optional<Events> eventsOptional = eventRepository.findByName(eventName);
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
-        }
-        else
+        } else
             return ResponseEntity.notFound().build();
 
         List<SubEventsModel> subEventsModelList = new ArrayList<>();
         subEventsModelList = events.getSubEvent();
-         SubEventsModel subEventsModel1 = new SubEventsModel();
+        SubEventsModel subEventsModel1 = new SubEventsModel();
 
-         subEventsModel1.setName(subEventsModel.getName());
-         subEventsModel1.setDesc(subEventsModel.getDesc());
-         subEventsModel1.setDate(subEventsModel.getDate());
-         subEventsModel1.setTime(subEventsModel.getTime());
-         subEventsModel1.setVenue(subEventsModel.getVenue());
+        subEventsModel1.setName(subEventsModel.getName());
+        subEventsModel1.setDesc(subEventsModel.getDesc());
+        subEventsModel1.setDate(subEventsModel.getDate());
+        subEventsModel1.setTime(subEventsModel.getTime());
+        subEventsModel1.setVenue(subEventsModel.getVenue());
 
-         subEventsModelList.add(subEventsModel1);
-         events.setSubEvent(subEventsModelList);
-         return ResponseEntity.ok(eventRepository.save(events));
+        subEventsModelList.add(subEventsModel1);
+        events.setSubEvent(subEventsModelList);
+        return ResponseEntity.ok(eventRepository.save(events));
     }
 
     @Override
@@ -114,28 +148,26 @@ public class EventServiceImpl implements EventService {
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
-        }
-        else
+        } else
             return ResponseEntity.notFound().build();
 
         List<SubEventsModel> subEvents = new ArrayList<>();
-        subEvents =  events.getSubEvent();
-        try{
-            if (subEvents!=null){
+        subEvents = events.getSubEvent();
+        try {
+            if (subEvents != null) {
                 Optional<SubEventsModel> subEventsModelOptional = subEvents.stream().filter(event -> event.getName().equals(subEventsModel.
                         getName())).findFirst();
-                if(subEventsModelOptional.isPresent()){
+                if (subEventsModelOptional.isPresent()) {
                     subEvents.remove(subEventsModelOptional.get());
                     events.setSubEvent(subEvents);
                     return ResponseEntity.ok(eventRepository.save(events));
-                }
-                else {
+                } else {
                     return ResponseEntity.notFound().build();
                 }
-            }else{
-                return ResponseEntity.status(new ErrorResponse("No Sub Events Found",HttpStatus.NOT_FOUND).getStatus()).body(null);
+            } else {
+                return ResponseEntity.status(new ErrorResponse("No Sub Events Found", HttpStatus.NOT_FOUND).getStatus()).body(null);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -147,8 +179,7 @@ public class EventServiceImpl implements EventService {
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
-        }
-        else
+        } else
             return ResponseEntity.notFound().build();
 
         List<UpdateModel> updateModelList = new ArrayList<>();
@@ -169,8 +200,7 @@ public class EventServiceImpl implements EventService {
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
-        }
-        else
+        } else
             return ResponseEntity.notFound().build();
         SocialMediaLinksModel socialMediaLinks = new SocialMediaLinksModel();
 
@@ -186,7 +216,7 @@ public class EventServiceImpl implements EventService {
 
     //saving event to DB
     @Override
-    public ResponseEntity<Events> registerEvents(EventModel eventModel, String emailId) {
+    public ResponseEntity<Events> registerEvents(EventModel eventModel, MultipartFile thumbnail, String emailId) {
         Society societyId;
         Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
 
@@ -215,6 +245,8 @@ public class EventServiceImpl implements EventService {
         events.setSponsors(new ArrayList<>());
         events.setSpecialGuest(new ArrayList<>());
         events.setSocialMedia(eventModel.getSocialMedia());
+        events.setThumbnail(dataBucketUtil.uploadFile(thumbnail));
+        events.setOrganizerName(societyOptional.get().getSocietyName());
 
         return ResponseEntity.ok(eventRepository.save(events));
     }
