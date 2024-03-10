@@ -1,5 +1,6 @@
 package com.kaptureevents.KaptureEvents.model;
 
+import com.kaptureevents.KaptureEvents.dto.FileDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class EventModel {
     private List<EventContactModel> contact;
     private String description;
     private EventAdditionalDetailsModel additionalDetails;
+    private FileDto thumbnail;
 
     private List<SponsorsModel> sponsors;
     private List<SpecialGuestModel> specialGuest;
