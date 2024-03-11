@@ -19,7 +19,6 @@ import java.sql.Date;
 import java.util.*;
 
 @Service
-
 @Slf4j
 public class EventServiceImpl implements EventService {
 

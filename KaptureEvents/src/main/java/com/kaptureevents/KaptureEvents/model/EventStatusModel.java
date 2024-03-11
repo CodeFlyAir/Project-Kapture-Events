@@ -15,8 +15,6 @@ public class EventStatusModel {
 
     private Date date;
 
-
-    //private Long eventId;
     private approvalStatus status;
     public enum approvalStatus{
         pending,
