@@ -3,7 +3,6 @@ package com.kaptureevents.KaptureEvents.controller;
 import com.kaptureevents.KaptureEvents.entity.Admin;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.model.AdminModel;
-import com.kaptureevents.KaptureEvents.model.StudentModel;
 import com.kaptureevents.KaptureEvents.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +19,7 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
     @PostMapping("/registration")
     private ResponseEntity<Admin> registerStudent(@Valid @RequestBody AdminModel adminModel) {
         try {

@@ -26,5 +26,5 @@ public class EventApprovalRequest {
     private Events event;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private EventStatusModel status;
+    private EventStatusModel.approvalStatus status;
 }

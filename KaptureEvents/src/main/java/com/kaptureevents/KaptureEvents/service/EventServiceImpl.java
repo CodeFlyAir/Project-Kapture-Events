@@ -1,9 +1,11 @@
 package com.kaptureevents.KaptureEvents.service;
 
 import com.kaptureevents.KaptureEvents.dto.FileDto;
+import com.kaptureevents.KaptureEvents.entity.EventApprovalRequest;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Society;
 import com.kaptureevents.KaptureEvents.model.*;
+import com.kaptureevents.KaptureEvents.repository.EventApprovalRequestRepository;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.SocietyRepository;
 import com.kaptureevents.KaptureEvents.utils.DataBucketUtil;
@@ -27,6 +29,9 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private SocietyRepository societyRepository;
+
+    @Autowired
+    private EventApprovalRequestRepository eventApprovalRequestRepository;
 
     @Autowired
     private DataBucketUtil dataBucketUtil;
@@ -65,7 +70,7 @@ public class EventServiceImpl implements EventService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(utilDate);
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
-                date = new java.sql.Date(calendar.getTime().getTime());
+                date = new Date(calendar.getTime().getTime());
                 Optional<List<Events>> eventsOptional = eventRepository.findByStartDateEquals(date);
                 return responseHelper(eventsOptional);
 
@@ -216,38 +221,50 @@ public class EventServiceImpl implements EventService {
     //saving event to DB
     @Override
     public ResponseEntity<Events> registerEvents(EventModel eventModel, MultipartFile thumbnail, String emailId) {
-        Society societyId;
-        Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
+        try {
+            Society societyId;
+            Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
 
-        if (societyOptional.isPresent())
-            societyId = societyOptional.get();
-        else
-            return ResponseEntity.notFound().build();
+            if (societyOptional.isPresent())
+                societyId = societyOptional.get();
+            else
+                return ResponseEntity.notFound().build();
 
-        Events events = new Events();
+            Events events = new Events();
 
-        //setting the accepted event details to Events object
-        events.setName(eventModel.getName());
-        events.setStartDate(eventModel.getStartDate());
-        events.setEndDate(eventModel.getEndDate());
-        events.setContact(eventModel.getContact());
-        events.setDescription(eventModel.getDescription());
-        events.setAdditionalDetails(eventModel.getAdditionalDetails());
-        events.setSocietyId(societyId);
-        events.setSponsors(eventModel.getSponsors());
-        events.setSpecialGuest(eventModel.getSpecialGuest());
-        events.setSubEvent(eventModel.getSubEvent());
-        events.setUpdates(eventModel.getUpdates());
-        events.setEventStatus(eventModel.getEventStatus());
-        events.setAdditionalDetails(new EventAdditionalDetailsModel());
-        events.setContact(new ArrayList<>());
-        events.setSponsors(new ArrayList<>());
-        events.setSpecialGuest(new ArrayList<>());
-        events.setSocialMedia(eventModel.getSocialMedia());
-        events.setThumbnail(dataBucketUtil.uploadFile(thumbnail));
-        events.setOrganizerName(societyOptional.get().getSocietyName());
+            //setting the accepted event details to Events object
+            events.setName(eventModel.getName());
+            events.setStartDate(eventModel.getStartDate());
+            events.setEndDate(eventModel.getEndDate());
+            events.setContact(eventModel.getContact());
+            events.setDescription(eventModel.getDescription());
+            events.setAdditionalDetails(eventModel.getAdditionalDetails());
+            events.setSocietyId(societyId);
+            events.setSponsors(eventModel.getSponsors());
+            events.setSpecialGuest(eventModel.getSpecialGuest());
+            events.setSubEvent(eventModel.getSubEvent());
+            events.setUpdates(eventModel.getUpdates());
+            events.setEventStatus(eventModel.getEventStatus());
+            events.setAdditionalDetails(new EventAdditionalDetailsModel());
+            events.setContact(new ArrayList<>());
+            events.setSponsors(new ArrayList<>());
+            events.setSpecialGuest(new ArrayList<>());
+            events.setSocialMedia(eventModel.getSocialMedia());
+            events.setThumbnail(dataBucketUtil.uploadFile(thumbnail));
+            events.setOrganizerName(societyOptional.get().getSocietyName());
 
-        return ResponseEntity.ok(eventRepository.save(events));
+            Events dbEvent = eventRepository.save(events);
+
+            EventApprovalRequest eventApprovalRequest = new EventApprovalRequest();
+            eventApprovalRequest.setEventId(dbEvent.getEvent_id());
+            eventApprovalRequest.setStatus(EventStatusModel.approvalStatus.pending);
+            eventApprovalRequestRepository.save(eventApprovalRequest);
+
+            return ResponseEntity.ok(dbEvent);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     //get event from DB

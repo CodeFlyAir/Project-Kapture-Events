@@ -11,5 +11,5 @@ import java.util.UUID;
 @NoArgsConstructor
 public class EventApprovalRequestModel {
     private UUID eventId;
-    private EventStatusModel status;
+    private EventStatusModel.approvalStatus status;
 }
