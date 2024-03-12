@@ -67,4 +67,8 @@ public class Events {
     @JdbcTypeCode(SqlTypes.JSON)
     private SocialMediaLinksModel socialMedia;
 
+
+    @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private EventApprovalRequest approvalRequest;
+
 }
