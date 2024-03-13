@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -91,10 +92,10 @@ public class EventController {
 
 
     //Get event from DB
-    @GetMapping("/{eventName}")
-    private ResponseEntity<Events> eventProfile(@PathVariable String eventName) {
+    @GetMapping("/{eventId}")
+    private ResponseEntity<Events> eventProfile(@PathVariable UUID eventId) {
         try {
-            return eventService.eventProfile(eventName);
+            return eventService.eventProfile(eventId);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
