@@ -33,21 +33,16 @@ public class SecurityNew  {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> {
-
                             authorize.requestMatchers("/**").permitAll();
-
-
-
+                    authorize.requestMatchers("https://storage.googleapis.com/").permitAll();
                             authorize.anyRequest().authenticated();
-
                         }
                 )
-
                 .oauth2Login(oauth2Login -> oauth2Login
                         .successHandler(new CustomAuthenticationSuccessHandler()));
-
         return http.build();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(
 
