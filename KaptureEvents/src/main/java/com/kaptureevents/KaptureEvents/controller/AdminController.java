@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin")
@@ -21,7 +22,7 @@ public class AdminController {
     private AdminService adminService;
 
     @PostMapping("/registration")
-    private ResponseEntity<Admin> registerStudent(@Valid @RequestBody AdminModel adminModel) {
+    private ResponseEntity<Admin> registerAdmin(@Valid @RequestBody AdminModel adminModel) {
         try {
             return adminService.register(adminModel);
         }catch(Exception e){
@@ -36,6 +37,16 @@ public class AdminController {
             return adminService.getPendingEvents();
         }catch(Exception e){
             log.error(e.getMessage(), e);   //If User registration fails
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @GetMapping("/event/{eventId}")
+    private ResponseEntity<Events> getEvent(@PathVariable UUID eventId){
+        try{
+            return adminService.getEvent(eventId);
+        }catch (Exception e){
+            log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }

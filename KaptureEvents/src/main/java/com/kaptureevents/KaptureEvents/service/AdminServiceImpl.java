@@ -6,6 +6,7 @@ import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.model.AdminModel;
 import com.kaptureevents.KaptureEvents.repository.AdminRepository;
 import com.kaptureevents.KaptureEvents.repository.EventApprovalRequestRepository;
+import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -22,6 +25,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private EventApprovalRequestRepository eventApprovalRequestRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @Override
     public ResponseEntity<Admin> register(AdminModel adminModel) {
@@ -55,5 +61,12 @@ public class AdminServiceImpl implements AdminService {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @Override
+    public ResponseEntity<Events> getEvent(UUID eventId) {
+        Optional<Events> event = eventRepository.findById(eventId);
+
+        return event.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
