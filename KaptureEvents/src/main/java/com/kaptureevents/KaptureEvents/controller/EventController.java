@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/events")
+@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class EventController {
 
     @Autowired
@@ -38,10 +39,10 @@ public class EventController {
     }
 
     @GetMapping("/all-events")
-    public ResponseEntity<List<Events>> getAllEvents(){
+    public ResponseEntity<List<Events>> getAllEvents() {
         try {
             return eventService.getEvents();
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -214,13 +215,13 @@ public class EventController {
 
     // adding a new sub event
     @PostMapping("/{eventName}/add-new-sub-event")
-    private ResponseEntity<Events> addNewSubEvent( @Valid
-            @PathVariable String eventName,
-            @RequestBody SubEventsModel subEventsModel){
+    private ResponseEntity<Events> addNewSubEvent(@Valid
+                                                  @PathVariable String eventName,
+                                                  @RequestBody SubEventsModel subEventsModel) {
 
-        try{
-            return eventService.addNewSubEvent(eventName,subEventsModel);
-        } catch (Exception e){
+        try {
+            return eventService.addNewSubEvent(eventName, subEventsModel);
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
@@ -229,21 +230,22 @@ public class EventController {
     @PostMapping("/{eventName}/important-updates")
     private ResponseEntity<Events> addUpdate(@Valid
                                              @PathVariable String eventName,
-                                             @RequestBody UpdateModel updateModel){
-        try{
-            return eventService.addUpdate(eventName,updateModel);
-        } catch (Exception e){
+                                             @RequestBody UpdateModel updateModel) {
+        try {
+            return eventService.addUpdate(eventName, updateModel);
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }
+
     //delete sub event
     @DeleteMapping("/{eventName}/delete-sub-event")
     private ResponseEntity<Events> deleteSubEvent(@PathVariable("eventName") String eventName,
-                                                  @RequestBody SubEventsModel subEventsModel){
-        try{
-            return eventService.deleteSubEvent(eventName,subEventsModel);
-        }catch (Exception e){
+                                                  @RequestBody SubEventsModel subEventsModel) {
+        try {
+            return eventService.deleteSubEvent(eventName, subEventsModel);
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
@@ -253,10 +255,10 @@ public class EventController {
     @PostMapping("/{eventName}/social-media-links")
     private ResponseEntity<Events> addSocialMediaLinks(@Valid
                                                        @PathVariable String eventName,
-                                                       @RequestBody SocialMediaLinksModel socialMediaLinksModel){
-        try{
-            return eventService.addSocialMediaLinks(eventName,socialMediaLinksModel);
-        }catch(Exception e){
+                                                       @RequestBody SocialMediaLinksModel socialMediaLinksModel) {
+        try {
+            return eventService.addSocialMediaLinks(eventName, socialMediaLinksModel);
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
