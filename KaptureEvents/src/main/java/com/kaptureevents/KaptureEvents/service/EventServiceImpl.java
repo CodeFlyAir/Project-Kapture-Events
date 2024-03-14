@@ -269,8 +269,8 @@ public class EventServiceImpl implements EventService {
 
     //get event from DB
     @Override
-    public ResponseEntity<Events> eventProfile(String name) {
-        Optional<Events> eventsOptional = eventRepository.findByName(name);
+    public ResponseEntity<Events> eventProfile(UUID eventId) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventId);
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
             return new ResponseEntity<>(events, HttpStatus.OK);

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface EventService {
     ResponseEntity<Events> registerEvents
@@ -14,7 +15,7 @@ public interface EventService {
     ResponseEntity<Events> addEventContact(
             EventContactModel eventContact, String eventName, MultipartFile file);
 
-    ResponseEntity<Events> eventProfile(String name);
+    ResponseEntity<Events> eventProfile(UUID eventId);
 
     ResponseEntity<Events> deleteEventContact(String eventName, Long contact);
 
