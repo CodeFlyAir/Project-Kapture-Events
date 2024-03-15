@@ -1,5 +1,6 @@
 package com.kaptureevents.KaptureEvents.controller;
 
+import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.model.StudentModel;
 import com.kaptureevents.KaptureEvents.service.StudentService;
@@ -8,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -18,15 +21,15 @@ public class StudentController {
     private StudentService studentService;
 
     //Student Registration
-    @PostMapping("/registration")
-    private String registerStudent(@Valid @RequestBody StudentModel studentModel) {
+    @PostMapping("/register")
+    private ResponseEntity<String> registerStudent(@Valid @RequestBody StudentModel studentModel,
+                                   @RequestParam("event-id") String eventId) {
         try {
-            studentService.registerStudent(studentModel);
-            return "User Registration Successful";
+            return studentService.registerStudent(studentModel,eventId);
         }catch(Exception e){
             log.error(e.getMessage(), e);   //If User registration fails
         }
-        return "User Registration Failed";
+        return ResponseEntity.internalServerError().build();
     }
 
     //TODO : Remove email from Path Variable and get it from
@@ -41,7 +44,12 @@ public class StudentController {
     @PutMapping("/profile/edit/{email}")
     public ResponseEntity<Student> updateStudentDetails(@PathVariable String email,
                                                         @RequestBody StudentModel updatedStudentModel) {
-        return studentService.editStudentDetails(email, updatedStudentModel);
+        try {
+            return studentService.editStudentDetails(email, updatedStudentModel);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return ResponseEntity.internalServerError().build();
     }
 
 
@@ -49,7 +57,22 @@ public class StudentController {
     // Spring Security for currently logged in user
     @DeleteMapping("/profile/delete/{email}")
     public ResponseEntity<Boolean> deleteStudent(@PathVariable String email){
-        return studentService.deleteStudent(email);
+        try {
+            return studentService.deleteStudent(email);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @GetMapping("/getAllEvents")
+    public ResponseEntity<List<Events>> getAllEvents(@RequestParam("email") String email){
+        try {
+            return studentService.findAllRegisteredEvents(email);
+        }catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return ResponseEntity.internalServerError().build();
     }
 
 }

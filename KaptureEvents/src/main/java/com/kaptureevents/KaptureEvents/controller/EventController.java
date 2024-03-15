@@ -1,6 +1,7 @@
 package com.kaptureevents.KaptureEvents.controller;
 
 import com.kaptureevents.KaptureEvents.entity.Events;
+import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.model.*;
 import com.kaptureevents.KaptureEvents.service.EventService;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,10 +94,10 @@ public class EventController {
 
 
     //Get event from DB
-    @GetMapping("/{eventId}")
-    private ResponseEntity<Events> eventProfile(@PathVariable UUID eventId) {
+    @GetMapping("/get-event")
+    private ResponseEntity<Events> eventProfile(@RequestParam("event-id") String eventId) {
         try {
-            return eventService.eventProfile(eventId);
+            return eventService.eventProfile(UUID.fromString(eventId));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -163,16 +165,19 @@ public class EventController {
     }
 
     //Delete from DB
-    @DeleteMapping("/delete/{eventName}")
-    public ResponseEntity<Boolean> deleteEvent(@PathVariable String eventName) {
-        return eventService.deleteEvent(eventName);
+    @DeleteMapping("/delete")
+    public ResponseEntity<Boolean> deleteEvent(@RequestParam("event-id") String eventId) {
+        return eventService.deleteEvent(UUID.fromString(eventId));
     }
 
-    @PostMapping("/{eventName}/add-sponsor")
-    private ResponseEntity<Events> addSponsor(@PathVariable String eventName,
-                                              @RequestPart("image") MultipartFile file) {
+    @PostMapping("/add-sponsor/{eventName}")
+    public ResponseEntity<Events> addSponsor(//@RequestParam("event-id") String eventId,
+                                             @PathVariable("eventName") String eventName,
+                                             @RequestPart("image") MultipartFile file) {
         try {
-            return eventService.addSponsor(eventName, file);
+            ResponseEntity<Events> eventsResponseEntity = eventService.addSponsor(eventName, file);
+            log.info("Return event Response");
+            return eventsResponseEntity;
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -259,6 +264,16 @@ public class EventController {
                                                        @RequestBody SocialMediaLinksModel socialMediaLinksModel) {
         try {
             return eventService.addSocialMediaLinks(eventName, socialMediaLinksModel);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @GetMapping("/get-registrations")
+    private ResponseEntity<List<Student>> getAllStudents(@RequestParam("event-id") String eventId) {
+        try {
+            return eventService.findAllStudentsRegisteredForEvent(eventId);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
