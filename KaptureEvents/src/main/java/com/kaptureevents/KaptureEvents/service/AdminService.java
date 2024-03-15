@@ -16,4 +16,8 @@ public interface AdminService {
     ResponseEntity<Events> getEvent(UUID eventId);
 
     ResponseEntity<List<Events>> getonHoldEvents();
+
+    void changeEventStatusToHold(UUID uuid, String message);
+
+    void changeEventStatusToAccept(UUID uuid, String message);
 }

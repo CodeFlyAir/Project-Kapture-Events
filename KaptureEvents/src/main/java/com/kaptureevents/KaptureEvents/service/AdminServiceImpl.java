@@ -5,6 +5,7 @@ import com.kaptureevents.KaptureEvents.entity.EventApprovalRequest;
 import com.kaptureevents.KaptureEvents.entity.EventOnHoldRequest;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.model.AdminModel;
+import com.kaptureevents.KaptureEvents.model.EventStatusModel;
 import com.kaptureevents.KaptureEvents.repository.AdminRepository;
 import com.kaptureevents.KaptureEvents.repository.EventApprovalRequestRepository;
 import com.kaptureevents.KaptureEvents.repository.EventOnHoldRequestRepository;
@@ -82,6 +83,30 @@ public class AdminServiceImpl implements AdminService {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @Override
+    public void changeEventStatusToHold(UUID uuid, String message) {
+        Optional<EventApprovalRequest> events=eventApprovalRequestRepository.findById(uuid);
+        if(events.isPresent()){
+            EventApprovalRequest eventApprovalRequest = events.get();
+            eventApprovalRequest.setStatus(EventStatusModel.approvalStatus.onHold);
+            eventApprovalRequest.setMessage(message);
+            eventApprovalRequestRepository.save(eventApprovalRequest);
+
+        }
+    }
+
+    @Override
+    public void changeEventStatusToAccept(UUID uuid, String message) {
+        Optional<EventOnHoldRequest> events = eventOnHoldRequestRepository.findById(uuid);
+        if (events.isPresent()){
+            EventOnHoldRequest eventOnHoldRequest=events.get();
+            eventOnHoldRequest.setStatus(EventStatusModel.approvalStatus.approved);
+            eventOnHoldRequest.setMessage(message);
+            eventOnHoldRequestRepository.save(eventOnHoldRequest);
+        }
+    }
+
 
     @Override
     public ResponseEntity<Events> getEvent(UUID eventId) {

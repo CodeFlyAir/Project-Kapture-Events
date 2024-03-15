@@ -28,4 +28,6 @@ public class EventOnHoldRequest {
 
     @JdbcTypeCode(SqlTypes.JSON)
     private EventStatusModel.approvalStatus status;
+
+    private String message;
 }

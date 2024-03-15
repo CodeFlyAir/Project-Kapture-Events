@@ -27,4 +27,6 @@ public class EventApprovalRequest {
 
     @JdbcTypeCode(SqlTypes.JSON)
     private EventStatusModel.approvalStatus status;
+
+    private String message;
 }

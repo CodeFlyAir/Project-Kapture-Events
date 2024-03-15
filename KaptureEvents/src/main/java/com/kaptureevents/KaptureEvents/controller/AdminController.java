@@ -7,6 +7,7 @@ import com.kaptureevents.KaptureEvents.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,5 +60,19 @@ public class AdminController {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("/event/change-status-to-on-hold")
+    public ResponseEntity<String> changeEventStatusToOnHold(@RequestParam ("eventId") String eventId,
+                                                            @RequestParam ("message") String message){
+        adminService.changeEventStatusToHold(UUID.fromString(eventId),message);
+        return new ResponseEntity<>("Event status changed to on Hold", HttpStatus.OK);
+    }
+
+    @PostMapping("/event/change-status-to-accept")
+    public ResponseEntity<String> changeEventStatusToAccept(@RequestParam ("eventId") String eventId,
+                                                            @RequestParam ("message") String message){
+        adminService.changeEventStatusToAccept(UUID.fromString(eventId),message);
+        return new ResponseEntity<>("Event status changed to Accepted",HttpStatus.OK);
     }
 }
