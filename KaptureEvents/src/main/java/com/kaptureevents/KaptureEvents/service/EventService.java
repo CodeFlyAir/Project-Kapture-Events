@@ -1,6 +1,7 @@
 package com.kaptureevents.KaptureEvents.service;
 
 import com.kaptureevents.KaptureEvents.entity.Events;
+import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,9 +18,11 @@ public interface EventService {
 
     ResponseEntity<Events> eventProfile(UUID eventId);
 
+    ResponseEntity<List<Student>> findAllStudentsRegisteredForEvent(String eventId);
+
     ResponseEntity<Events> deleteEventContact(String eventName, Long contact);
 
-    ResponseEntity<Boolean> deleteEvent(String name);
+    ResponseEntity<Boolean> deleteEvent(UUID name);
 
     ResponseEntity<String> editTeamFormationGuidelines(String name, String guidelines);
 
@@ -31,7 +34,7 @@ public interface EventService {
 
     ResponseEntity<Events> deleteResource(String eventName, String fileName);
 
-    ResponseEntity<Events> addSponsor(String eventName, MultipartFile file);
+    ResponseEntity<Events> addSponsor(String eventId, MultipartFile file);
 
     ResponseEntity<Events> deleteSponsor(String eventName, String fileName);
 

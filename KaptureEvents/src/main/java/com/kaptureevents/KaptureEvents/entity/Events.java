@@ -71,4 +71,8 @@ public class Events {
     @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private EventApprovalRequest approvalRequest;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentEventRegistration> registeredStudents;
+
+
 }
