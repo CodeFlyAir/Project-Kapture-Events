@@ -41,6 +41,16 @@ public class AdminController {
         return ResponseEntity.internalServerError().build();
     }
 
+    @GetMapping("/onHold-events")
+    private  ResponseEntity<List<Events>> onHoldEvents(){
+        try {
+            return adminService.getonHoldEvents();
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
     @GetMapping("/event/{eventId}")
     private ResponseEntity<Events> getEvent(@PathVariable UUID eventId){
         try{

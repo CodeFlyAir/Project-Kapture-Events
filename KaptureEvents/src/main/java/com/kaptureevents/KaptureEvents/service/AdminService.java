@@ -14,4 +14,6 @@ public interface AdminService {
     ResponseEntity<List<Events>> getPendingEvents();
 
     ResponseEntity<Events> getEvent(UUID eventId);
+
+    ResponseEntity<List<Events>> getonHoldEvents();
 }
