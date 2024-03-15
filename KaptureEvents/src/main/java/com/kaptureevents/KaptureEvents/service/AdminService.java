@@ -20,4 +20,6 @@ public interface AdminService {
     void changeEventStatusToHold(UUID uuid, String message);
 
     void changeEventStatusToAccept(UUID uuid, String message);
+
+    void changeEventStatusToReject(UUID uuid, String message);
 }

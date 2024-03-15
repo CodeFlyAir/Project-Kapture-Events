@@ -75,4 +75,11 @@ public class AdminController {
         adminService.changeEventStatusToAccept(UUID.fromString(eventId),message);
         return new ResponseEntity<>("Event status changed to Accepted",HttpStatus.OK);
     }
+
+    @PostMapping("/event/change-status-to-reject")
+    public ResponseEntity<String> changeStatusToReject(@RequestParam ("eventId") String eventId,
+                                                       @RequestParam ("message") String message){
+        adminService.changeEventStatusToReject(UUID.fromString(eventId),message);
+        return new ResponseEntity<>("Event status changed to Rejected",HttpStatus.OK);
+    }
 }

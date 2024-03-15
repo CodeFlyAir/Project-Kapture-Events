@@ -107,6 +107,17 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    @Override
+    public void changeEventStatusToReject(UUID uuid, String message) {
+        Optional<EventOnHoldRequest> events = eventOnHoldRequestRepository.findById(uuid);
+        if (events.isPresent()){
+            EventOnHoldRequest eventOnHoldRequest = events.get();
+            eventOnHoldRequest.setStatus(EventStatusModel.approvalStatus.rejected);
+            eventOnHoldRequest.setMessage(message);
+            eventOnHoldRequestRepository.delete(eventOnHoldRequest);
+        }
+    }
+
 
     @Override
     public ResponseEntity<Events> getEvent(UUID eventId) {
