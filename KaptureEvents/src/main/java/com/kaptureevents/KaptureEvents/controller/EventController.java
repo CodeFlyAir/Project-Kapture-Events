@@ -170,12 +170,11 @@ public class EventController {
         return eventService.deleteEvent(UUID.fromString(eventId));
     }
 
-    @PostMapping("/add-sponsor/{eventName}")
-    public ResponseEntity<Events> addSponsor(//@RequestParam("event-id") String eventId,
-                                             @PathVariable("eventName") String eventName,
+    @PostMapping("/add-sponsor")
+    public ResponseEntity<Events> addSponsor(@RequestParam("event-id") String eventId,
                                              @RequestPart("image") MultipartFile file) {
         try {
-            ResponseEntity<Events> eventsResponseEntity = eventService.addSponsor(eventName, file);
+            ResponseEntity<Events> eventsResponseEntity = eventService.addSponsor(UUID.fromString(eventId), file);
             log.info("Return event Response");
             return eventsResponseEntity;
         } catch (Exception e) {
@@ -184,35 +183,35 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
-    @DeleteMapping("/{eventName}/delete-sponsor/{fileName}")
-    private ResponseEntity<Events> deleteSponsor(@PathVariable("eventName") String eventName,
-                                                 @PathVariable("fileName") String fileName) {
+    @DeleteMapping("/delete-sponsor")
+    private ResponseEntity<Events> deleteSponsor(@RequestParam("event-id") String eventId,
+                                                 @RequestParam("file-name") String fileName) {
         try {
-            return eventService.deleteSponsor(eventName, fileName);
+            return eventService.deleteSponsor(UUID.fromString(eventId), fileName);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }
 
-    @PostMapping("/{eventName}/add-special-guest")
+    @PostMapping("/add-special-guest")
     private ResponseEntity<Events> addSpecialGuest(
-            @PathVariable String eventName,
+            @RequestParam("event-id") String eventId,
             @RequestPart("jsonData") SpecialGuestModel specialGuestModel,
             @RequestPart("image") MultipartFile image) {
         try {
-            return eventService.addSpecialGuest(eventName, specialGuestModel, image);
+            return eventService.addSpecialGuest(UUID.fromString(eventId), specialGuestModel, image);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }
 
-    @DeleteMapping("/{eventName}/delete-special-guest")
-    private ResponseEntity<Events> deleteSpecialGuest(@PathVariable("eventName") String eventName,
+    @DeleteMapping("/delete-special-guest")
+    private ResponseEntity<Events> deleteSpecialGuest(@RequestParam("event-id") String eventId,
                                                       @RequestBody SpecialGuestModel specialGuestModel) {
         try {
-            return eventService.deleteSpecialGuest(eventName, specialGuestModel);
+            return eventService.deleteSpecialGuest(UUID.fromString(eventId), specialGuestModel);
         } catch (Exception e) {
             log.error(e.getMessage());
         }

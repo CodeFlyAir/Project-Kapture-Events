@@ -66,7 +66,7 @@ public class StudentController {
     }
 
     @GetMapping("/getAllEvents")
-    public ResponseEntity<List<Events>> getAllEvents(@RequestParam("email") String email){
+    public ResponseEntity<List<Events>> getAllEvents(@RequestParam("email-id") String email){
         try {
             return studentService.findAllRegisteredEvents(email);
         }catch (Exception e) {

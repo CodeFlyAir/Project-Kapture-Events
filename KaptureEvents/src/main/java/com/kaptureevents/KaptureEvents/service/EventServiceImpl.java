@@ -528,9 +528,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> addSponsor(String eventId, MultipartFile file) {
+    public ResponseEntity<Events> addSponsor(UUID eventId, MultipartFile file) {
         try {
-            Optional<Events> eventsOptional = eventRepository.findByName(eventId);
+            Optional<Events> eventsOptional = eventRepository.findById(eventId);
 
             if (eventsOptional.isPresent()) {
                 Events events = eventsOptional.get();
@@ -556,16 +556,18 @@ public class EventServiceImpl implements EventService {
                     return ResponseEntity.internalServerError().build();
                 }
             }
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+
         }
         return ResponseEntity.internalServerError().build();
     }
 
 
     @Override
-    public ResponseEntity<Events> deleteSponsor(String eventName, String fileName) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> deleteSponsor(UUID eventId, String fileName) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventId);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
@@ -603,8 +605,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> addSpecialGuest(String eventName, SpecialGuestModel specialGuestModel, MultipartFile image) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> addSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel, MultipartFile image) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventId);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
@@ -635,8 +637,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> deleteSpecialGuest(String eventName, SpecialGuestModel specialGuestModel) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> deleteSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventId);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();

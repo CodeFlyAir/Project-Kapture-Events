@@ -34,13 +34,13 @@ public interface EventService {
 
     ResponseEntity<Events> deleteResource(String eventName, String fileName);
 
-    ResponseEntity<Events> addSponsor(String eventId, MultipartFile file);
+    ResponseEntity<Events> addSponsor(UUID eventId, MultipartFile file);
 
-    ResponseEntity<Events> deleteSponsor(String eventName, String fileName);
+    ResponseEntity<Events> deleteSponsor(UUID eventId, String fileName);
 
-    ResponseEntity<Events> addSpecialGuest(String eventName, SpecialGuestModel specialGuestModel, MultipartFile image);
+    ResponseEntity<Events> addSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel, MultipartFile image);
 
-    ResponseEntity<Events> deleteSpecialGuest(String eventName, SpecialGuestModel specialGuestModel);
+    ResponseEntity<Events> deleteSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel);
 
     ResponseEntity<List<Events>> getEvents();
 
