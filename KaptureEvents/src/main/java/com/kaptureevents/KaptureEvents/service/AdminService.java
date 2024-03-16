@@ -6,9 +6,20 @@ import com.kaptureevents.KaptureEvents.model.AdminModel;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AdminService {
     ResponseEntity<Admin> register(AdminModel adminModel);
 
     ResponseEntity<List<Events>> getPendingEvents();
+
+    ResponseEntity<Events> getEvent(UUID eventId);
+
+    ResponseEntity<List<Events>> getonHoldEvents();
+
+    void changeEventStatusToHold(UUID uuid, String message);
+
+    void changeEventStatusToAccept(UUID uuid, String message);
+
+    void changeEventStatusToReject(UUID uuid, String message);
 }

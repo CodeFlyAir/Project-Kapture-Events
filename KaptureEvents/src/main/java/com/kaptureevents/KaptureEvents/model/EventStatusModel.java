@@ -1,6 +1,8 @@
 package com.kaptureevents.KaptureEvents.model;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,9 @@ public class EventStatusModel {
 
     public enum approvalStatus{
         pending,
+        onHold,
         rejected,
         approved
     }
+    private String message;
 }

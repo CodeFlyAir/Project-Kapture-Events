@@ -1,8 +1,10 @@
 package com.kaptureevents.KaptureEvents.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kaptureevents.KaptureEvents.model.EventStatusModel;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,14 +15,14 @@ import java.util.UUID;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class EventApprovalRequest {
+@NoArgsConstructor
+public class EventOnHoldRequest {
+
     @Id
     private UUID eventId;
 
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "eventId")
     private Events event;
 
