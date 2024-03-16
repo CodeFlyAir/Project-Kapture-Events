@@ -250,9 +250,11 @@ public class EventServiceImpl implements EventService {
             EventStatusModel statusModel=new EventStatusModel();
             statusModel.setStatus(EventStatusModel.approvalStatus.pending);
             statusModel.setDate(new java.util.Date());
+
             List<EventStatusModel> statusModelList=new ArrayList<>();
             statusModelList.add(statusModel);
             events.setEventStatus(statusModelList);
+
             events.setAdditionalDetails(new EventAdditionalDetailsModel());
             events.setContact(new ArrayList<>());
             events.setSponsors(new ArrayList<>());
