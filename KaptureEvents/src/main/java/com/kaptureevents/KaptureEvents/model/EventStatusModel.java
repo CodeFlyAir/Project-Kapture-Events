@@ -14,6 +14,7 @@ public class EventStatusModel {
     private Date date;
 
     private approvalStatus status;
+
     public enum approvalStatus{
         pending,
         onHold,
