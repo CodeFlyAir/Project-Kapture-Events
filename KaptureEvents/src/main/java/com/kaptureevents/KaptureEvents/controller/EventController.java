@@ -52,11 +52,11 @@ public class EventController {
     }
 
     //Event registration
-    @PostMapping("/register/{emailId}")
+    @PostMapping("/register")
     public ResponseEntity<Events> registerEvents(
             @Valid @RequestPart("jsonData") EventModel eventModel,
             @RequestPart("thumbnail") MultipartFile thumbnail,
-            @PathVariable String emailId) {
+            @RequestParam("email-id") String emailId) {
         try {
             return eventService.registerEvents(eventModel, thumbnail, emailId);
         } catch (Exception e) {
@@ -66,13 +66,13 @@ public class EventController {
     }
 
     //Add Contact Details to an event
-    @PostMapping("/{eventName}/addContact")
+    @PostMapping("/addContact")
     public ResponseEntity<Events> addEventContact(
             @RequestPart(value = "imageFile") MultipartFile imageFile,
             @RequestPart(value = "jsonData") EventContactModel eventContact,
-            @PathVariable String eventName) {
+            @RequestParam("event-id") String eventId) {
         try {
-            return eventService.addEventContact(eventContact, eventName, imageFile);
+            return eventService.addEventContact(eventContact, UUID.fromString(eventId), imageFile);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -80,12 +80,12 @@ public class EventController {
     }
 
     // Delete Event Contact
-    @DeleteMapping("/{eventName}/deleteContact/{contact}")
+    @DeleteMapping("/deleteContact")
     public ResponseEntity<Events> deleteEventContact(
-            @PathVariable("eventName") String eventName,
-            @PathVariable("contact") Long contact) {
+            @RequestParam("event-id") String eventId,
+            @RequestParam("contact") Long contact) {
         try {
-            return eventService.deleteEventContact(eventName, contact);
+            return eventService.deleteEventContact(UUID.fromString(eventId), contact);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -105,11 +105,11 @@ public class EventController {
     }
 
     // Edit Team Formation Guidelines
-    @PostMapping("/{eventName}/edit-team-formation-guidelines")
-    private ResponseEntity<String> editTeamFormationGuidelines(@PathVariable String eventName,
+    @PostMapping("/edit-team-formation-guidelines")
+    private ResponseEntity<String> editTeamFormationGuidelines(@RequestParam("event-id") String eventId,
                                                                @RequestBody String guidelines) {
         try {
-            return eventService.editTeamFormationGuidelines(eventName, guidelines);
+            return eventService.editTeamFormationGuidelines(UUID.fromString(eventId), guidelines);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -117,11 +117,11 @@ public class EventController {
     }
 
     // Edit Rewards
-    @PostMapping("/{eventName}/edit-rewards")
-    private ResponseEntity<String> editRewards(@PathVariable String eventName,
+    @PostMapping("/edit-rewards")
+    private ResponseEntity<String> editRewards(@RequestParam("event-id") String eventId,
                                                @RequestBody String rewards) {
         try {
-            return eventService.editRewards(eventName, rewards);
+            return eventService.editRewards(UUID.fromString(eventId), rewards);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -129,11 +129,11 @@ public class EventController {
     }
 
     // Edit Eligibility Criteria
-    @PostMapping("/{eventName}/edit-eligibility-criteria")
-    private ResponseEntity<String> editEligibilityCriteria(@PathVariable String eventName,
+    @PostMapping("/edit-eligibility-criteria")
+    private ResponseEntity<String> editEligibilityCriteria(@RequestParam("event-id") String eventId,
                                                            @RequestBody String eligibilityCriteria) {
         try {
-            return eventService.editEligibilityCriteria(eventName, eligibilityCriteria);
+            return eventService.editEligibilityCriteria(UUID.fromString(eventId), eligibilityCriteria);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -141,11 +141,11 @@ public class EventController {
     }
 
     // Add Downloadable Resource
-    @PostMapping("/{eventName}/add-resource")
-    private ResponseEntity<Events> addResource(@PathVariable String eventName,
+    @PostMapping("/add-resource")
+    private ResponseEntity<Events> addResource(@RequestParam("event-id") String eventId,
                                                @RequestPart(value = "imageFile") MultipartFile file) {
         try {
-            return eventService.addResource(eventName, file);
+            return eventService.addResource(UUID.fromString(eventId), file);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -153,11 +153,11 @@ public class EventController {
     }
 
     // Delete Resource
-    @DeleteMapping("/{eventName}/delete-resource/{fileName}")
-    private ResponseEntity<Events> deleteResource(@PathVariable("eventName") String eventName,
-                                                  @PathVariable("fileName") String fileName) {
+    @DeleteMapping("/delete-resource")
+    private ResponseEntity<Events> deleteResource(@RequestParam("event-id") String eventId,
+                                                  @RequestParam("file-name") String fileName) {
         try {
-            return eventService.deleteResource(eventName, fileName);
+            return eventService.deleteResource(UUID.fromString(eventId), fileName);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -219,25 +219,24 @@ public class EventController {
     }
 
     // adding a new sub event
-    @PostMapping("/{eventName}/add-new-sub-event")
+    @PostMapping("/add-new-sub-event")
     private ResponseEntity<Events> addNewSubEvent(@Valid
-                                                  @PathVariable String eventName,
+                                                  @RequestParam("event-id") String eventId,
                                                   @RequestBody SubEventsModel subEventsModel) {
 
         try {
-            return eventService.addNewSubEvent(eventName, subEventsModel);
+            return eventService.addNewSubEvent(UUID.fromString(eventId), subEventsModel);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }
 
-    @PostMapping("/{eventName}/important-updates")
-    private ResponseEntity<Events> addUpdate(@Valid
-                                             @PathVariable String eventName,
+    @PostMapping("/important-updates")
+    private ResponseEntity<Events> addUpdate(@RequestParam("event-id") String eventId,
                                              @RequestBody UpdateModel updateModel) {
         try {
-            return eventService.addUpdate(eventName, updateModel);
+            return eventService.addUpdate(UUID.fromString(eventId), updateModel);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -245,11 +244,11 @@ public class EventController {
     }
 
     //delete sub event
-    @DeleteMapping("/{eventName}/delete-sub-event")
-    private ResponseEntity<Events> deleteSubEvent(@PathVariable("eventName") String eventName,
+    @DeleteMapping("/delete-sub-event")
+    private ResponseEntity<Events> deleteSubEvent(@RequestParam("event-id") String eventId,
                                                   @RequestBody SubEventsModel subEventsModel) {
         try {
-            return eventService.deleteSubEvent(eventName, subEventsModel);
+            return eventService.deleteSubEvent(UUID.fromString(eventId), subEventsModel);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -257,12 +256,11 @@ public class EventController {
     }
 
     //post social media links
-    @PostMapping("/{eventName}/social-media-links")
-    private ResponseEntity<Events> addSocialMediaLinks(@Valid
-                                                       @PathVariable String eventName,
+    @PostMapping("/social-media-links")
+    private ResponseEntity<Events> addSocialMediaLinks(@RequestParam("event-id") String eventId,
                                                        @RequestBody SocialMediaLinksModel socialMediaLinksModel) {
         try {
-            return eventService.addSocialMediaLinks(eventName, socialMediaLinksModel);
+            return eventService.addSocialMediaLinks(UUID.fromString(eventId), socialMediaLinksModel);
         } catch (Exception e) {
             log.error(e.getMessage());
         }

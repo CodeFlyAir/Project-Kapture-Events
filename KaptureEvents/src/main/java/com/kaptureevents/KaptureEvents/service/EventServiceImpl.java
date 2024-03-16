@@ -126,8 +126,8 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public ResponseEntity<Events> addNewSubEvent(String eventName, SubEventsModel subEventsModel) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> addNewSubEvent(UUID eventName, SubEventsModel subEventsModel) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
@@ -150,8 +150,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> deleteSubEvent(String eventName, SubEventsModel subEventsModel) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> deleteSubEvent(UUID eventName, SubEventsModel subEventsModel) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
@@ -181,8 +181,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> addUpdate(String eventName, UpdateModel updateModel) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> addUpdate(UUID eventName, UpdateModel updateModel) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
@@ -202,8 +202,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> addSocialMediaLinks(String eventName, SocialMediaLinksModel socialMediaLinksModel) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> addSocialMediaLinks(UUID eventName, SocialMediaLinksModel socialMediaLinksModel) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
         Events events;
         if (eventsOptional.isPresent()) {
             events = eventsOptional.get();
@@ -285,8 +285,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public ResponseEntity<Events> addEventContact(
-            EventContactModel eventContactModel, String eventName, MultipartFile file) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+            EventContactModel eventContactModel, UUID eventId, MultipartFile file) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventId);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
@@ -343,8 +343,8 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public ResponseEntity<Events> deleteEventContact(String eventName, Long contactNumber) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> deleteEventContact(UUID eventId, Long contactNumber) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventId);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
@@ -397,8 +397,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<String> editTeamFormationGuidelines(String name, String guidelines) {
-        Optional<Events> eventsOptional = eventRepository.findByName(name);
+    public ResponseEntity<String> editTeamFormationGuidelines(UUID name, String guidelines) {
+        Optional<Events> eventsOptional = eventRepository.findById(name);
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
 
@@ -417,8 +417,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<String> editRewards(String eventName, String rewards) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<String> editRewards(UUID eventName, String rewards) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
 
@@ -437,8 +437,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<String> editEligibilityCriteria(String eventName, String eligibilityCriteria) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<String> editEligibilityCriteria(UUID eventName, String eligibilityCriteria) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
 
@@ -457,8 +457,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> addResource(String eventName, MultipartFile file) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> addResource(UUID eventName, MultipartFile file) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
@@ -485,8 +485,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<Events> deleteResource(String eventName, String fileName) {
-        Optional<Events> eventsOptional = eventRepository.findByName(eventName);
+    public ResponseEntity<Events> deleteResource(UUID eventName, String fileName) {
+        Optional<Events> eventsOptional = eventRepository.findById(eventName);
 
         if (eventsOptional.isPresent()) {
             Events events = eventsOptional.get();
