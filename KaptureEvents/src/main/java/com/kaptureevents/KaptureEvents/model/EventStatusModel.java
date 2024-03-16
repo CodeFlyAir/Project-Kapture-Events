@@ -1,7 +1,6 @@
 package com.kaptureevents.KaptureEvents.model;
 
-import com.kaptureevents.KaptureEvents.entity.Events;
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,7 @@ public class EventStatusModel {
     private Date date;
 
     private approvalStatus status;
+
     public enum approvalStatus{
         pending,
         rejected,
