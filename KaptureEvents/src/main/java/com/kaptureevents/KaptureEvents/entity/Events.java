@@ -1,5 +1,6 @@
 package com.kaptureevents.KaptureEvents.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kaptureevents.KaptureEvents.dto.FileDto;
 import com.kaptureevents.KaptureEvents.model.*;
 import jakarta.persistence.*;
@@ -60,11 +61,18 @@ public class Events {
     @JdbcTypeCode(SqlTypes.JSON)
     private List<UpdateModel> updates;
 
-
     @JdbcTypeCode(SqlTypes.JSON)
     private List<EventStatusModel> eventStatus;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private SocialMediaLinksModel socialMedia;
+
+
+    @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private EventApprovalRequest approvalRequest;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<StudentEventRegistration> registeredStudents;
+
 
 }
