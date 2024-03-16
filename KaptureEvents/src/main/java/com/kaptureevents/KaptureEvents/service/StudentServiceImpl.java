@@ -1,36 +1,101 @@
 package com.kaptureevents.KaptureEvents.service;
 
+import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Student;
+import com.kaptureevents.KaptureEvents.entity.StudentEventRegistration;
 import com.kaptureevents.KaptureEvents.model.StudentModel;
+import com.kaptureevents.KaptureEvents.repository.EventRepository;
+import com.kaptureevents.KaptureEvents.repository.StudentEventRegistrationRepository;
 import com.kaptureevents.KaptureEvents.repository.StudentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class StudentServiceImpl implements StudentService{
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private StudentEventRegistrationRepository studentEventRegistrationRepository;
+
     // Save the student to DB
     @Override
-    public void registerStudent(StudentModel studentModel) {
-        Student student = new Student();
+    public ResponseEntity<String> registerStudent(StudentModel studentModel, String eventId) {
+        // Retrieve the event from the database
+        try {
+            Optional<Events> optionalEvent = eventRepository.findById(UUID.fromString(eventId));
+            if (optionalEvent.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            Events event = optionalEvent.get();
 
-        // Sets the accepted student details to Student object
-        student.setFirstName(studentModel.getFirstName());
-        student.setLastName(studentModel.getLastName());
-        student.setRoll(studentModel.getRoll());
-        student.setEmail(studentModel.getEmail());
-        student.setContact(studentModel.getContact());
-        student.setGender(studentModel.getGender().toString().toUpperCase().charAt(0));
+            // Create a new student entity
+            Student student = new Student();
+            student.setFirstName(studentModel.getFirstName());
+            student.setLastName(studentModel.getLastName());
+            student.setRoll(studentModel.getRoll());
+            student.setEmail(studentModel.getEmail());
+            student.setContact(studentModel.getContact());
+            student.setGender(studentModel.getGender().toString().toUpperCase().charAt(0));
 
-        studentRepository.save(student);    //Save the student to DB
+            // Save the student to the database
+            studentRepository.save(student);
+
+            // Create a new StudentEventRegistration entity to link the student and event
+            StudentEventRegistration registration = new StudentEventRegistration();
+            registration.setStudent(student);
+            registration.setEvent(event);
+
+            // Save the registration to the database
+            studentEventRegistrationRepository.save(registration);
+
+            // Return a ResponseEntity indicating success
+            return ResponseEntity.ok("Student registered for event successfully");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
+
+    @Override
+    public ResponseEntity<List<Events>> findAllRegisteredEvents(String studentEmail) {
+        try {
+            // Retrieve the student from the database
+            Optional<Student> optionalStudent = studentRepository.findById(studentEmail);
+            if (optionalStudent.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            Student student = optionalStudent.get();
+
+            // Retrieve all registrations for the student
+            List<StudentEventRegistration> registrations = studentEventRegistrationRepository.findByStudent(student);
+
+            // Extract the events from the registrations
+            List<Events> registeredEvents = registrations.stream()
+                    .map(StudentEventRegistration::getEvent)
+                    .collect(Collectors.toList());
+
+            // Return a ResponseEntity with the list of registered events
+            return ResponseEntity.ok(registeredEvents);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
     //Get Student details from DB
     @Override

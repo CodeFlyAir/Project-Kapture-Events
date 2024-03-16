@@ -1,10 +1,8 @@
 package com.kaptureevents.KaptureEvents.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kaptureevents.KaptureEvents.model.EventStatusModel;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +19,8 @@ public class EventApprovalRequest {
     @Id
     private UUID eventId;
 
-    @OneToOne
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eventId")
     private Events event;
 

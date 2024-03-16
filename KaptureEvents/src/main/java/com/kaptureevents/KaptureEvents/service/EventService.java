@@ -1,6 +1,7 @@
 package com.kaptureevents.KaptureEvents.service;
 
 import com.kaptureevents.KaptureEvents.entity.Events;
+import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.model.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,31 +14,33 @@ public interface EventService {
             (EventModel eventModel, MultipartFile thumbnail, String emailId);
 
     ResponseEntity<Events> addEventContact(
-            EventContactModel eventContact, String eventName, MultipartFile file);
+            EventContactModel eventContact, UUID eventName, MultipartFile file);
 
     ResponseEntity<Events> eventProfile(UUID eventId);
 
-    ResponseEntity<Events> deleteEventContact(String eventName, Long contact);
+    ResponseEntity<List<Student>> findAllStudentsRegisteredForEvent(String eventId);
 
-    ResponseEntity<Boolean> deleteEvent(String name);
+    ResponseEntity<Events> deleteEventContact(UUID eventName, Long contact);
 
-    ResponseEntity<String> editTeamFormationGuidelines(String name, String guidelines);
+    ResponseEntity<Boolean> deleteEvent(UUID name);
 
-    ResponseEntity<String> editRewards(String eventName, String rewards);
+    ResponseEntity<String> editTeamFormationGuidelines(UUID name, String guidelines);
 
-    ResponseEntity<String> editEligibilityCriteria(String eventName, String eligibilityCriteria);
+    ResponseEntity<String> editRewards(UUID eventName, String rewards);
 
-    ResponseEntity<Events> addResource(String eventName, MultipartFile file);
+    ResponseEntity<String> editEligibilityCriteria(UUID eventName, String eligibilityCriteria);
 
-    ResponseEntity<Events> deleteResource(String eventName, String fileName);
+    ResponseEntity<Events> addResource(UUID eventName, MultipartFile file);
 
-    ResponseEntity<Events> addSponsor(String eventName, MultipartFile file);
+    ResponseEntity<Events> deleteResource(UUID eventName, String fileName);
 
-    ResponseEntity<Events> deleteSponsor(String eventName, String fileName);
+    ResponseEntity<Events> addSponsor(UUID eventId, MultipartFile file);
 
-    ResponseEntity<Events> addSpecialGuest(String eventName, SpecialGuestModel specialGuestModel, MultipartFile image);
+    ResponseEntity<Events> deleteSponsor(UUID eventId, String fileName);
 
-    ResponseEntity<Events> deleteSpecialGuest(String eventName, SpecialGuestModel specialGuestModel);
+    ResponseEntity<Events> addSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel, MultipartFile image);
+
+    ResponseEntity<Events> deleteSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel);
 
     ResponseEntity<List<Events>> getEvents();
 
@@ -45,12 +48,12 @@ public interface EventService {
 
     ResponseEntity<List<EventPreviewModel>> getEventsForHomeWithFilter(String filters);
 
-    ResponseEntity<Events> addNewSubEvent(String eventName, SubEventsModel subEventsModel);
+    ResponseEntity<Events> addNewSubEvent(UUID eventName, SubEventsModel subEventsModel);
 
-    ResponseEntity<Events> deleteSubEvent(String eventName, SubEventsModel subEventsModel);
+    ResponseEntity<Events> deleteSubEvent(UUID eventName, SubEventsModel subEventsModel);
 
-    ResponseEntity<Events> addUpdate(String eventName, UpdateModel updateModel);
+    ResponseEntity<Events> addUpdate(UUID eventName, UpdateModel updateModel);
 
 
-    ResponseEntity<Events> addSocialMediaLinks(String eventName, SocialMediaLinksModel socialMediaLinksModel);
+    ResponseEntity<Events> addSocialMediaLinks(UUID eventName, SocialMediaLinksModel socialMediaLinksModel);
 }

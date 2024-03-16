@@ -34,7 +34,6 @@ public class SecurityNew  {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> {
                             authorize.requestMatchers("/**").permitAll();
-                    authorize.requestMatchers("https://storage.googleapis.com/").permitAll();
                             authorize.anyRequest().authenticated();
                         }
                 )
