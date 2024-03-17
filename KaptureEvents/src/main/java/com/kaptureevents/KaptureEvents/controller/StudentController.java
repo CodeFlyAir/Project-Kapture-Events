@@ -14,8 +14,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/student")
-@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-        allowedHeaders = "*")
+@CrossOrigin(
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*",
+        allowCredentials = "true",
+        origins = {"http://localhost:5174", "http://kapture-events.onrender.com"}
+)
 @Slf4j
 public class StudentController {
     @Autowired
