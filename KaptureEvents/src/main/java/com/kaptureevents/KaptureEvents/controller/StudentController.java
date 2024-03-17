@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/student")
-@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 @Slf4j
 public class StudentController {
     @Autowired
