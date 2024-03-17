@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/society")
 @Slf4j
-@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*",
+        allowCredentials = "true",
+        origins = {"http://localhost:5174", "http://kapture-events.onrender.com"}
+)
 public class SocietyController {
 
     @Autowired
