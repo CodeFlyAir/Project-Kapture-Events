@@ -68,7 +68,7 @@ public class Events {
     private SocialMediaLinksModel socialMedia;
 
 
-    @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "event", orphanRemoval = true)
     private EventApprovalRequest approvalRequest;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
