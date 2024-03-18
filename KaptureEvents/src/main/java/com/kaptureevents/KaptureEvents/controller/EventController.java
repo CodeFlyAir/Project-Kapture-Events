@@ -21,9 +21,7 @@ import java.util.UUID;
 @RequestMapping("/events")
 @CrossOrigin(
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-        allowedHeaders = "*",
-        allowCredentials = "true",
-        origins = {"http://localhost:5174", "http://kapture-events.onrender.com"}
+        allowedHeaders = "*"
 )
 public class EventController {
 
