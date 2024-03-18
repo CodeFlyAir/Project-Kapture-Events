@@ -14,4 +14,5 @@ public class StudentModel {
     private String lastName;
     private Long contact;
     private Character gender;
+    private int year;
 }

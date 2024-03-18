@@ -31,6 +31,8 @@ public class Student {
 
     private Character gender;
 
+    private int year;
+
     @ElementCollection
     private List<String> registeredEventIds;
 
@@ -41,6 +43,7 @@ public class Student {
         this.lastName=updatedStudentModel.getLastName();
         this.contact= updatedStudentModel.getContact();
         this.gender=updatedStudentModel.getGender();
+        this.year=updatedStudentModel.getYear();
     }
 
 }

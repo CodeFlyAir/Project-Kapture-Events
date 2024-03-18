@@ -26,10 +26,10 @@ public class StudentController {
     //Student Registration
     @PostMapping("/register")
     private ResponseEntity<String> registerStudent(@Valid @RequestBody StudentModel studentModel,
-                                   @RequestParam("event-id") String eventId) {
+                                                   @RequestParam("event-id") String eventId) {
         try {
-            return studentService.registerStudent(studentModel,eventId);
-        }catch(Exception e){
+            return studentService.registerStudent(studentModel, eventId);
+        } catch (Exception e) {
             log.error(e.getMessage(), e);   //If User registration fails
         }
         return ResponseEntity.internalServerError().build();
@@ -38,7 +38,7 @@ public class StudentController {
     //TODO : Remove email from Path Variable and get it from
     // Spring Security for currently logged in user
     @GetMapping("/profile/{email}")
-    private ResponseEntity<Student> studentProfile(@PathVariable String email){
+    private ResponseEntity<Student> studentProfile(@PathVariable String email) {
         return studentService.studentProfile(email);
     }
 
@@ -59,7 +59,7 @@ public class StudentController {
     //TODO : Remove email from Path Variable and get it from
     // Spring Security for currently logged in user
     @DeleteMapping("/profile/delete/{email}")
-    public ResponseEntity<Boolean> deleteStudent(@PathVariable String email){
+    public ResponseEntity<Boolean> deleteStudent(@PathVariable String email) {
         try {
             return studentService.deleteStudent(email);
         } catch (Exception e) {
@@ -69,10 +69,10 @@ public class StudentController {
     }
 
     @GetMapping("/getAllEvents")
-    public ResponseEntity<List<Events>> getAllEvents(@RequestParam("email-id") String email){
+    public ResponseEntity<List<Events>> getAllEvents(@RequestParam("email-id") String email) {
         try {
             return studentService.findAllRegisteredEvents(email);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
         return ResponseEntity.internalServerError().build();
