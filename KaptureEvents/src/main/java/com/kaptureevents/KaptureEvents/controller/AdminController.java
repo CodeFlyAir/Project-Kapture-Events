@@ -3,11 +3,13 @@ package com.kaptureevents.KaptureEvents.controller;
 import com.kaptureevents.KaptureEvents.entity.Admin;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.model.AdminModel;
+import com.kaptureevents.KaptureEvents.model.EventStatusModel;
 import com.kaptureevents.KaptureEvents.service.AdminService;
+import com.kaptureevents.KaptureEvents.service.EventService;
+import com.kaptureevents.KaptureEvents.utils.EventStatusConverter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +19,14 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/admin")
 @Slf4j
+
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private EventService eventService;
 
     @PostMapping("/registration")
     private ResponseEntity<Admin> registerAdmin(@Valid @RequestBody AdminModel adminModel) {
@@ -32,7 +38,7 @@ public class AdminController {
         return ResponseEntity.internalServerError().build();
     }
 
-    @GetMapping("/pending-events")
+    @GetMapping("/events/pending-events")
     private ResponseEntity<List<Events>> pendingEvents(){
         try {
             return adminService.getPendingEvents();
@@ -42,44 +48,40 @@ public class AdminController {
         return ResponseEntity.internalServerError().build();
     }
 
-    @GetMapping("/onHold-events")
+    @GetMapping("/events/on-hold-events")
     private  ResponseEntity<List<Events>> onHoldEvents(){
         try {
-            return adminService.getonHoldEvents();
+            return adminService.getOnHoldEvents();
         }catch (Exception e){
             log.error(e.getMessage(),e);
         }
         return ResponseEntity.internalServerError().build();
     }
 
-    @GetMapping("/event/{eventId}")
-    private ResponseEntity<Events> getEvent(@PathVariable UUID eventId){
+    @GetMapping("/events/get-event")
+    private ResponseEntity<Events> getEvent(@RequestParam("event-id") String eventId){
         try{
-            return adminService.getEvent(eventId);
+            return eventService.eventProfile(UUID.fromString(eventId));
         }catch (Exception e){
             log.error(e.getMessage());
         }
         return ResponseEntity.internalServerError().build();
     }
 
-    @PostMapping("/event/change-status-to-on-hold")
-    public ResponseEntity<String> changeEventStatusToOnHold(@RequestParam ("eventId") String eventId,
-                                                            @RequestParam ("message") String message){
-        adminService.changeEventStatusToHold(UUID.fromString(eventId),message);
-        return new ResponseEntity<>("Event status changed to on Hold", HttpStatus.OK);
-    }
+    @PostMapping("/event/change-event-status")
+    public ResponseEntity<Object> changeEventStatus(@RequestParam ("event-id") String eventId,
+                                                    @RequestParam (value = "status") String statusText,
+                                                    @RequestParam (value = "message",required = false) String message){
+        try {
+            EventStatusModel.approvalStatus status = EventStatusConverter.converter(statusText);
+            if(status == EventStatusModel.approvalStatus.unknown){
+                return ResponseEntity.badRequest().build();
+            }
 
-    @PostMapping("/event/change-status-to-accept")
-    public ResponseEntity<String> changeEventStatusToAccept(@RequestParam ("eventId") String eventId,
-                                                            @RequestParam ("message") String message){
-        adminService.changeEventStatusToAccept(UUID.fromString(eventId),message);
-        return new ResponseEntity<>("Event status changed to Accepted",HttpStatus.OK);
-    }
-
-    @PostMapping("/event/change-status-to-reject")
-    public ResponseEntity<String> changeStatusToReject(@RequestParam ("eventId") String eventId,
-                                                       @RequestParam ("message") String message){
-        adminService.changeEventStatusToReject(UUID.fromString(eventId),message);
-        return new ResponseEntity<>("Event status changed to Rejected",HttpStatus.OK);
+            return adminService.changeEventStatus(UUID.fromString(eventId),status,message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
