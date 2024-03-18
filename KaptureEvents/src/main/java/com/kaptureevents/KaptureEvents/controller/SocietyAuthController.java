@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/path")
-@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*"
+)
 public class SocietyAuthController {
-
-
     private AuthenticationManager authenticationManager;
     private PasswordEncoder passwordEncoder;
     private SocietyAuthRepository societyAuthRepository;

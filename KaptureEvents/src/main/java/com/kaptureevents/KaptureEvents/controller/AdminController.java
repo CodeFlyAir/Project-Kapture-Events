@@ -15,6 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 @Slf4j
+@CrossOrigin(
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*"
+)
 public class AdminController {
 
     @Autowired

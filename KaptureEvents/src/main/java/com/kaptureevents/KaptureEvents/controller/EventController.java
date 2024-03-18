@@ -19,7 +19,10 @@ import java.util.UUID;
 @RestController
 @Slf4j
 @RequestMapping("/events")
-@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*"
+)
 public class EventController {
 
     @Autowired
