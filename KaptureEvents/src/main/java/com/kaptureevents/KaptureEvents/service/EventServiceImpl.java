@@ -134,6 +134,16 @@ public class EventServiceImpl implements EventService {
         } else
             return ResponseEntity.notFound().build();
 
+        // Get event start and end dates
+        Date eventStartDate = events.getStartDate();
+        Date eventEndDate = events.getEndDate();
+
+        // Check if sub event date falls between start and end date of the event
+        Date subEventDate = subEventsModel.getDate();
+        if (subEventDate != null && !isDateWithinRange(subEventDate, eventStartDate, eventEndDate)) {
+            log.error("Sub event date should be between start and end date of event");
+            return ResponseEntity.badRequest().build();
+        }
         List<SubEventsModel> subEventsModelList;
         subEventsModelList = events.getSubEvent();
         SubEventsModel subEventsModel1 = new SubEventsModel();
@@ -148,6 +158,9 @@ public class EventServiceImpl implements EventService {
         events.setSubEvent(subEventsModelList);
         eventRepository.save(events);
         return ResponseEntity.ok(subEventsModelList);
+    }
+    private boolean isDateWithinRange(Date date, Date startDate, Date endDate) {
+        return !(date.before(startDate) || date.after(endDate));
     }
 
     @Override
@@ -234,54 +247,68 @@ public class EventServiceImpl implements EventService {
     @Override
     public ResponseEntity<Events> registerEvents(EventModel eventModel, MultipartFile thumbnail, String emailId) {
         try {
+
             Society societyId;
-            Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
+            // Validate start and end dates
+            Date startDate = eventModel.getStartDate();
+            Date endDate = eventModel.getEndDate();
 
-            if (societyOptional.isPresent())
-                societyId = societyOptional.get();
-            else
-                return ResponseEntity.notFound().build();
+            if (startDate != null && endDate != null && endDate.after(startDate) && startDate.after(new Date(System.currentTimeMillis()))) {
+                Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
 
-            Events events = new Events();
+                if (societyOptional.isPresent())
+                    societyId = societyOptional.get();
+                else
+                    return ResponseEntity.notFound().build();
 
-            events.setContact(new ArrayList<>());
-            events.setSponsors(new ArrayList<>());
-            events.setSpecialGuest(new ArrayList<>());
-            events.setUpdates(new ArrayList<>());
+                Events events = new Events();
 
-            //setting the accepted event details to Events object
-            events.setName(eventModel.getName());
-            events.setStartDate(eventModel.getStartDate());
-            events.setEndDate(eventModel.getEndDate());
-            events.setContact(eventModel.getContact());
-            events.setDescription(eventModel.getDescription());
-            events.setAdditionalDetails(eventModel.getAdditionalDetails());
-            events.setSocietyId(societyId);
-            events.setSponsors(eventModel.getSponsors());
-            events.setSpecialGuest(eventModel.getSpecialGuest());
-            events.setSubEvent(eventModel.getSubEvent());
-            events.setUpdates(eventModel.getUpdates());
-            EventStatusModel statusModel = new EventStatusModel();
-            statusModel.setStatus(EventStatusModel.approvalStatus.pending);
-            statusModel.setDate(new java.util.Date());
+                events.setContact(new ArrayList<>());
+                events.setSponsors(new ArrayList<>());
+                events.setSpecialGuest(new ArrayList<>());
+                events.setUpdates(new ArrayList<>());
 
-            List<EventStatusModel> statusModelList = new ArrayList<>();
-            statusModelList.add(statusModel);
-            events.setEventStatus(statusModelList);
+                //setting the accepted event details to Events object
+                events.setName(eventModel.getName());
+                events.setStartDate(eventModel.getStartDate());
+                events.setEndDate(eventModel.getEndDate());
+                events.setContact(eventModel.getContact());
+                events.setDescription(eventModel.getDescription());
+                events.setAdditionalDetails(eventModel.getAdditionalDetails());
+                events.setSocietyId(societyId);
+                events.setSponsors(eventModel.getSponsors());
+                events.setSpecialGuest(eventModel.getSpecialGuest());
+                events.setSubEvent(eventModel.getSubEvent());
+                events.setUpdates(eventModel.getUpdates());
+                EventStatusModel statusModel = new EventStatusModel();
+                statusModel.setStatus(EventStatusModel.approvalStatus.pending);
+                statusModel.setDate(new java.util.Date());
 
-            events.setAdditionalDetails(new EventAdditionalDetailsModel());
-            events.setSocialMedia(eventModel.getSocialMedia());
-            events.setThumbnail(dataBucketUtil.uploadFile(thumbnail));
-            events.setOrganizerName(societyOptional.get().getSocietyName());
+                List<EventStatusModel> statusModelList = new ArrayList<>();
+                statusModelList.add(statusModel);
+                events.setEventStatus(statusModelList);
 
-            Events dbEvent = eventRepository.save(events);
+                events.setAdditionalDetails(new EventAdditionalDetailsModel());
+                events.setSocialMedia(eventModel.getSocialMedia());
+                events.setThumbnail(dataBucketUtil.uploadFile(thumbnail));
+                events.setOrganizerName(societyOptional.get().getSocietyName());
 
-            EventApprovalRequest eventApprovalRequest = new EventApprovalRequest();
-            eventApprovalRequest.setEventId(dbEvent.getEvent_id());
-            eventApprovalRequest.setStatus(EventStatusModel.approvalStatus.pending);
-            eventApprovalRequestRepository.save(eventApprovalRequest);
+                Events dbEvent = eventRepository.save(events);
 
-            return ResponseEntity.ok(dbEvent);
+                EventApprovalRequest eventApprovalRequest = new EventApprovalRequest();
+                eventApprovalRequest.setEventId(dbEvent.getEvent_id());
+                eventApprovalRequest.setStatus(EventStatusModel.approvalStatus.pending);
+                eventApprovalRequestRepository.save(eventApprovalRequest);
+
+                return ResponseEntity.ok(dbEvent);
+            }
+            else {
+                // Invalid start or end date, return bad request
+                log.error("Invalid");
+                //return ResponseEntity.badRequest().build();
+                // return new ErrorResponse("Invalid Start Date and End Date",HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(new ErrorResponse("Invalid Start Date and End Date",HttpStatus.BAD_REQUEST).getStatus()).body(null);
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
