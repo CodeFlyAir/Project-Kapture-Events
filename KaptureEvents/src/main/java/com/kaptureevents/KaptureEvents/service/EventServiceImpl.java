@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -125,19 +126,52 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    @Override
-    public ResponseEntity<Events> addNewSubEvent(UUID eventName, SubEventsModel subEventsModel) {
-        Optional<Events> eventsOptional = eventRepository.findById(eventName);
-        Events events;
-        if (eventsOptional.isPresent()) {
-            events = eventsOptional.get();
-        } else
-            return ResponseEntity.notFound().build();
+//    @Override
+//    public ResponseEntity<Events> addNewSubEvent(UUID eventName, SubEventsModel subEventsModel) {
+//        Optional<Events> eventsOptional = eventRepository.findById(eventName);
+//        Events events;
+//        if (eventsOptional.isPresent()) {
+//            events = eventsOptional.get();
+//        } else
+//            return ResponseEntity.notFound().build();
+//
+//        List<SubEventsModel> subEventsModelList = new ArrayList<>();
+//        subEventsModelList = events.getSubEvent();
+//        SubEventsModel subEventsModel1 = new SubEventsModel();
+//
+//        subEventsModel1.setName(subEventsModel.getName());
+//        subEventsModel1.setDesc(subEventsModel.getDesc());
+//        subEventsModel1.setDate(subEventsModel.getDate());
+//        subEventsModel1.setTime(subEventsModel.getTime());
+//        subEventsModel1.setVenue(subEventsModel.getVenue());
+//
+//        subEventsModelList.add(subEventsModel1);
+//        events.setSubEvent(subEventsModelList);
+//        return ResponseEntity.ok(eventRepository.save(events));
+//    }
+@Override
+public ResponseEntity<Events> addNewSubEvent(UUID eventName, SubEventsModel subEventsModel) {
+    Optional<Events> eventsOptional = eventRepository.findById(eventName);
+    if (eventsOptional.isPresent()) {
+        Events events = eventsOptional.get();
 
-        List<SubEventsModel> subEventsModelList = new ArrayList<>();
-        subEventsModelList = events.getSubEvent();
+        // Get event start and end dates
+        Date eventStartDate = events.getStartDate();
+        Date eventEndDate = events.getEndDate();
+
+        // Check if sub event date falls between start and end date of the event
+        Date subEventDate = (Date) subEventsModel.getDate();
+        if (subEventDate != null && !isDateWithinRange(subEventDate, eventStartDate, eventEndDate)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Add sub event to the list
+        List<SubEventsModel> subEventsModelList = events.getSubEvent();
+        if (subEventsModelList == null) {
+            subEventsModelList = new ArrayList<>();
+        }
+
         SubEventsModel subEventsModel1 = new SubEventsModel();
-
         subEventsModel1.setName(subEventsModel.getName());
         subEventsModel1.setDesc(subEventsModel.getDesc());
         subEventsModel1.setDate(subEventsModel.getDate());
@@ -146,8 +180,20 @@ public class EventServiceImpl implements EventService {
 
         subEventsModelList.add(subEventsModel1);
         events.setSubEvent(subEventsModelList);
+
+        // Save updated event
         return ResponseEntity.ok(eventRepository.save(events));
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
+
+    private boolean isDateWithinRange(Date date, Date startDate, Date endDate) {
+        return !(date.before(startDate) || date.after(endDate));
+    }
+
+
+
 
     @Override
     public ResponseEntity<Events> deleteSubEvent(UUID eventName, SubEventsModel subEventsModel) {
@@ -224,51 +270,62 @@ public class EventServiceImpl implements EventService {
     //saving event to DB
     @Override
     public ResponseEntity<Events> registerEvents(EventModel eventModel, MultipartFile thumbnail, String emailId) {
+//
         try {
-            Society societyId;
-            Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
+            // Validate start and end dates
+            Date startDate = eventModel.getStartDate();
+            Date endDate = eventModel.getEndDate();
 
-            if (societyOptional.isPresent())
-                societyId = societyOptional.get();
-            else
-                return ResponseEntity.notFound().build();
+            if (startDate != null && endDate != null && endDate.after(startDate) && startDate.after(new Date(System.currentTimeMillis()))) {
+                // Retrieve society by email ID
+                Optional<Society> societyOptional = societyRepository.findByEmailId(emailId);
 
-            Events events = new Events();
+                if (societyOptional.isPresent()) {
+                    Society societyId = societyOptional.get();
 
-            //setting the accepted event details to Events object
-            events.setName(eventModel.getName());
-            events.setStartDate(eventModel.getStartDate());
-            events.setEndDate(eventModel.getEndDate());
-            events.setContact(eventModel.getContact());
-            events.setDescription(eventModel.getDescription());
-            events.setAdditionalDetails(eventModel.getAdditionalDetails());
-            events.setSocietyId(societyId);
-            events.setSponsors(eventModel.getSponsors());
-            events.setSpecialGuest(eventModel.getSpecialGuest());
-            events.setSubEvent(eventModel.getSubEvent());
-            events.setUpdates(eventModel.getUpdates());
-            EventStatusModel statusModel=new EventStatusModel();
-            statusModel.setStatus(EventStatusModel.approvalStatus.pending);
-            statusModel.setDate(new java.util.Date());
-            List<EventStatusModel> statusModelList=new ArrayList<>();
-            statusModelList.add(statusModel);
-            events.setEventStatus(statusModelList);
-            events.setAdditionalDetails(new EventAdditionalDetailsModel());
-            events.setContact(new ArrayList<>());
-            events.setSponsors(new ArrayList<>());
-            events.setSpecialGuest(new ArrayList<>());
-            events.setSocialMedia(eventModel.getSocialMedia());
-            events.setThumbnail(dataBucketUtil.uploadFile(thumbnail));
-            events.setOrganizerName(societyOptional.get().getSocietyName());
 
-            Events dbEvent = eventRepository.save(events);
 
-            EventApprovalRequest eventApprovalRequest = new EventApprovalRequest();
-            eventApprovalRequest.setEventId(dbEvent.getEvent_id());
-            eventApprovalRequest.setStatus(EventStatusModel.approvalStatus.pending);
-            eventApprovalRequestRepository.save(eventApprovalRequest);
+                    Events events = new Events();
 
-            return ResponseEntity.ok(dbEvent);
+
+                    // Set event details
+                    events.setName(eventModel.getName());
+                    events.setStartDate(startDate);
+                    events.setEndDate(endDate);
+                    events.setContact(eventModel.getContact());
+                    events.setDescription(eventModel.getDescription());
+                    events.setAdditionalDetails(eventModel.getAdditionalDetails());
+                    events.setSocietyId(societyId);
+                    events.setSponsors(eventModel.getSponsors());
+                    events.setSpecialGuest(eventModel.getSpecialGuest());
+                    events.setSubEvent(eventModel.getSubEvent());
+                    events.setUpdates(eventModel.getUpdates());
+                    events.setEventStatus(eventModel.getEventStatus());
+                    events.setSocialMedia(eventModel.getSocialMedia());
+                    events.setThumbnail(dataBucketUtil.uploadFile(thumbnail));
+                    events.setOrganizerName(societyId.getSocietyName());
+
+                    // Save event to the database
+                    Events dbEvent = eventRepository.save(events);
+
+                    // Create event approval request
+                    EventApprovalRequest eventApprovalRequest = new EventApprovalRequest();
+                    eventApprovalRequest.setEventId(dbEvent.getEvent_id());
+                    eventApprovalRequest.setStatus(EventStatusModel.approvalStatus.pending);
+                    eventApprovalRequestRepository.save(eventApprovalRequest);
+
+                    return ResponseEntity.ok(dbEvent);
+                } else {
+                    // Society not found for the given email ID
+                    return ResponseEntity.notFound().build();
+                }
+            } else {
+                // Invalid start or end date, return bad request
+                log.error("Invalid");
+                //return ResponseEntity.badRequest().build();
+               // return new ErrorResponse("Invalid Start Date and End Date",HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(new ErrorResponse("Invalid Start Date and End Date",HttpStatus.BAD_REQUEST).getStatus()).body(null);
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

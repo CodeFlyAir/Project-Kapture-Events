@@ -74,5 +74,4 @@ public class Events {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<StudentEventRegistration> registeredStudents;
 
-
 }
