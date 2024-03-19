@@ -20,7 +20,12 @@ import java.util.UUID;
 @RestController
 @Slf4j
 @RequestMapping("/events")
-@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+        allowedHeaders = "*",
+        allowCredentials = "true",
+        origins = {"http://localhost:5174", "http://kapture-events.onrender.com"}
+)
 public class EventController {
 
     @Autowired

@@ -3,6 +3,7 @@ package com.kaptureevents.KaptureEvents.service;
 import com.kaptureevents.KaptureEvents.entity.Admin;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.model.AdminModel;
+import com.kaptureevents.KaptureEvents.model.EventStatusModel;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -13,13 +14,7 @@ public interface AdminService {
 
     ResponseEntity<List<Events>> getPendingEvents();
 
-    ResponseEntity<Events> getEvent(UUID eventId);
+    ResponseEntity<List<Events>> getOnHoldEvents();
 
-    ResponseEntity<List<Events>> getonHoldEvents();
-
-    void changeEventStatusToHold(UUID uuid, String message);
-
-    void changeEventStatusToAccept(UUID uuid, String message);
-
-    void changeEventStatusToReject(UUID uuid, String message);
+    ResponseEntity<Object> changeEventStatus(UUID uuid, EventStatusModel.approvalStatus status, String message);
 }
