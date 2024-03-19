@@ -1,5 +1,6 @@
 package com.kaptureevents.KaptureEvents.controller;
 
+import com.kaptureevents.KaptureEvents.dto.FileDto;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.model.*;
@@ -21,9 +22,7 @@ import java.util.UUID;
 @RequestMapping("/events")
 @CrossOrigin(
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-        allowedHeaders = "*",
-        allowCredentials = "true",
-        origins = {"http://localhost:5174", "http://kapture-events.onrender.com"}
+        allowedHeaders = "*"
 )
 public class EventController {
 
@@ -56,6 +55,17 @@ public class EventController {
         }
     }
 
+    //Get event from DB
+    @GetMapping("/get-event")
+    private ResponseEntity<Events> eventProfile(@RequestParam("event-id") String eventId) {
+        try {
+            return eventService.eventProfile(UUID.fromString(eventId));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
     //Event registration
     @PostMapping("/register")
     public ResponseEntity<Events> registerEvents(
@@ -72,7 +82,7 @@ public class EventController {
 
     //Add Contact Details to an event
     @PostMapping("/addContact")
-    public ResponseEntity<Events> addEventContact(
+    public ResponseEntity<List<EventContactModel>> addEventContact(
             @RequestPart(value = "imageFile") MultipartFile imageFile,
             @RequestPart(value = "jsonData") EventContactModel eventContact,
             @RequestParam("event-id") String eventId) {
@@ -86,23 +96,11 @@ public class EventController {
 
     // Delete Event Contact
     @DeleteMapping("/deleteContact")
-    public ResponseEntity<Events> deleteEventContact(
+    public ResponseEntity<List<EventContactModel>> deleteEventContact(
             @RequestParam("event-id") String eventId,
             @RequestParam("contact") Long contact) {
         try {
             return eventService.deleteEventContact(UUID.fromString(eventId), contact);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-
-
-    //Get event from DB
-    @GetMapping("/get-event")
-    private ResponseEntity<Events> eventProfile(@RequestParam("event-id") String eventId) {
-        try {
-            return eventService.eventProfile(UUID.fromString(eventId));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -147,8 +145,8 @@ public class EventController {
 
     // Add Downloadable Resource
     @PostMapping("/add-resource")
-    private ResponseEntity<Events> addResource(@RequestParam("event-id") String eventId,
-                                               @RequestPart(value = "imageFile") MultipartFile file) {
+    private ResponseEntity<List<FileDto>> addResource(@RequestParam("event-id") String eventId,
+                                                      @RequestPart(value = "imageFile") MultipartFile file) {
         try {
             return eventService.addResource(UUID.fromString(eventId), file);
         } catch (Exception e) {
@@ -159,8 +157,8 @@ public class EventController {
 
     // Delete Resource
     @DeleteMapping("/delete-resource")
-    private ResponseEntity<Events> deleteResource(@RequestParam("event-id") String eventId,
-                                                  @RequestParam("file-name") String fileName) {
+    private ResponseEntity<List<FileDto>> deleteResource(@RequestParam("event-id") String eventId,
+                                                         @RequestParam("file-name") String fileName) {
         try {
             return eventService.deleteResource(UUID.fromString(eventId), fileName);
         } catch (Exception e) {
@@ -176,12 +174,10 @@ public class EventController {
     }
 
     @PostMapping("/add-sponsor")
-    public ResponseEntity<Events> addSponsor(@RequestParam("event-id") String eventId,
-                                             @RequestPart("image") MultipartFile file) {
+    public ResponseEntity<List<SponsorsModel>> addSponsor(@RequestParam("event-id") String eventId,
+                                                          @RequestPart("image") MultipartFile file) {
         try {
-            ResponseEntity<Events> eventsResponseEntity = eventService.addSponsor(UUID.fromString(eventId), file);
-            log.info("Return event Response");
-            return eventsResponseEntity;
+            return eventService.addSponsor(UUID.fromString(eventId), file);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -189,8 +185,8 @@ public class EventController {
     }
 
     @DeleteMapping("/delete-sponsor")
-    private ResponseEntity<Events> deleteSponsor(@RequestParam("event-id") String eventId,
-                                                 @RequestParam("file-name") String fileName) {
+    private ResponseEntity<List<SponsorsModel>> deleteSponsor(@RequestParam("event-id") String eventId,
+                                                              @RequestParam("file-name") String fileName) {
         try {
             return eventService.deleteSponsor(UUID.fromString(eventId), fileName);
         } catch (Exception e) {
@@ -200,7 +196,7 @@ public class EventController {
     }
 
     @PostMapping("/add-special-guest")
-    private ResponseEntity<Events> addSpecialGuest(
+    private ResponseEntity<List<SpecialGuestModel>> addSpecialGuest(
             @RequestParam("event-id") String eventId,
             @RequestPart("jsonData") SpecialGuestModel specialGuestModel,
             @RequestPart("image") MultipartFile image) {
@@ -213,8 +209,8 @@ public class EventController {
     }
 
     @DeleteMapping("/delete-special-guest")
-    private ResponseEntity<Events> deleteSpecialGuest(@RequestParam("event-id") String eventId,
-                                                      @RequestBody SpecialGuestModel specialGuestModel) {
+    private ResponseEntity<List<SpecialGuestModel>> deleteSpecialGuest(@RequestParam("event-id") String eventId,
+                                                                       @RequestBody SpecialGuestModel specialGuestModel) {
         try {
             return eventService.deleteSpecialGuest(UUID.fromString(eventId), specialGuestModel);
         } catch (Exception e) {
@@ -224,9 +220,8 @@ public class EventController {
     }
 
     // adding a new sub event
-    @PostMapping("/add-new-sub-event")
-    private ResponseEntity<Events> addNewSubEvent(@Valid
-                                                  @RequestParam("event-id") String eventId,
+    @PostMapping("/add-sub-event")
+    private ResponseEntity<List<SubEventsModel>> addNewSubEvent(@RequestParam("event-id") String eventId,
                                                   @RequestBody SubEventsModel subEventsModel) {
 
         try {
@@ -237,20 +232,9 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
-    @PostMapping("/important-updates")
-    private ResponseEntity<Events> addUpdate(@RequestParam("event-id") String eventId,
-                                             @RequestBody UpdateModel updateModel) {
-        try {
-            return eventService.addUpdate(UUID.fromString(eventId), updateModel);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return ResponseEntity.internalServerError().build();
-    }
-
     //delete sub event
     @DeleteMapping("/delete-sub-event")
-    private ResponseEntity<Events> deleteSubEvent(@RequestParam("event-id") String eventId,
+    private ResponseEntity<List<SubEventsModel>> deleteSubEvent(@RequestParam("event-id") String eventId,
                                                   @RequestBody SubEventsModel subEventsModel) {
         try {
             return eventService.deleteSubEvent(UUID.fromString(eventId), subEventsModel);
@@ -260,9 +244,20 @@ public class EventController {
         return ResponseEntity.internalServerError().build();
     }
 
+    @PostMapping("/important-updates")
+    private ResponseEntity<List<UpdateModel>> addUpdate(@RequestParam("event-id") String eventId,
+                                             @RequestBody String updateMessage) {
+        try {
+            return eventService.addUpdate(UUID.fromString(eventId), updateMessage);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
     //post social media links
     @PostMapping("/social-media-links")
-    private ResponseEntity<Events> addSocialMediaLinks(@RequestParam("event-id") String eventId,
+    private ResponseEntity<SocialMediaLinksModel> addSocialMediaLinks(@RequestParam("event-id") String eventId,
                                                        @RequestBody SocialMediaLinksModel socialMediaLinksModel) {
         try {
             return eventService.addSocialMediaLinks(UUID.fromString(eventId), socialMediaLinksModel);

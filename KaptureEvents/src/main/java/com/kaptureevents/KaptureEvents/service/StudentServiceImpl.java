@@ -10,6 +10,7 @@ import com.kaptureevents.KaptureEvents.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,11 @@ public class StudentServiceImpl implements StudentService{
 
             // Return a ResponseEntity indicating success
             return ResponseEntity.ok("Student registered for event successfully");
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException e){
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already registered for the event");
+        }
+        catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }

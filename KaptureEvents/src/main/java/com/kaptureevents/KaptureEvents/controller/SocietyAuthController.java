@@ -18,13 +18,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/path")
 @CrossOrigin(
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-        allowedHeaders = "*",
-        allowCredentials = "true",
-        origins = {"http://localhost:5174", "http://kapture-events.onrender.com"}
+        allowedHeaders = "*"
 )
 public class SocietyAuthController {
-
-
     private AuthenticationManager authenticationManager;
     private PasswordEncoder passwordEncoder;
     private SocietyAuthRepository societyAuthRepository;
