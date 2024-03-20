@@ -34,6 +34,17 @@ public class SocietyController {
         return "Society Registration Failed";
     }
 
+    @GetMapping("/login")
+    private ResponseEntity<Boolean> login(@RequestParam("email-id") String email,
+                                          @RequestParam("password") String password){
+        try{
+            return societyService.login(email, password);
+        }catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
     //ToDo: Remove the id from path variable and get it
     // from Animesh (for currently logged user)
 

@@ -12,4 +12,6 @@ public interface SocietyService {
     ResponseEntity<Society> editSocietyDetails(String email, SocietyModel updatedSocietyModel);
 
     ResponseEntity<Boolean> deleteSociety(String email);
+
+    ResponseEntity<Boolean> login(String email, String password);
 }
