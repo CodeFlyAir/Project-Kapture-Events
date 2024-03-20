@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StudentEventRegistrationRepository
@@ -14,4 +15,6 @@ public interface StudentEventRegistrationRepository
     List<StudentEventRegistration> findByEvent(Events event);
 
     List<StudentEventRegistration> findByStudent(Student student);
+
+    Optional<StudentEventRegistration> findByEventAndStudent(Events events, Student student);
 }

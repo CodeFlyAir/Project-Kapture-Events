@@ -2,6 +2,8 @@ package com.kaptureevents.KaptureEvents.controller;
 
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Student;
+import com.kaptureevents.KaptureEvents.entity.StudentEventRegistration;
+import com.kaptureevents.KaptureEvents.model.StudentEventRegistrationModel;
 import com.kaptureevents.KaptureEvents.model.StudentModel;
 import com.kaptureevents.KaptureEvents.service.StudentService;
 import jakarta.validation.Valid;
@@ -34,6 +36,28 @@ public class StudentController {
         }
         return ResponseEntity.internalServerError().build();
     }
+
+    @GetMapping("/check-registration")
+    private ResponseEntity<Boolean> checkRegistration(@RequestParam("event-id") String eventId,
+                                                      @RequestParam("email-id") String emailId) {
+        try {
+            return studentService.checkRegistration(eventId, emailId);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);   //If User registration fails
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
+    @GetMapping("/get-all-registrations")
+    private ResponseEntity<List<StudentEventRegistrationModel>> getAllRegistrations() {
+        try {
+            return studentService.getAllRegistrations();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);   //If User registration fails
+        }
+        return ResponseEntity.internalServerError().build();
+    }
+
 
     //TODO : Remove email from Path Variable and get it from
     // Spring Security for currently logged in user
@@ -68,6 +92,7 @@ public class StudentController {
         return ResponseEntity.internalServerError().build();
     }
 
+    //All registered events for a particular student
     @GetMapping("/getAllEvents")
     public ResponseEntity<List<Events>> getAllEvents(@RequestParam("email-id") String email) {
         try {
