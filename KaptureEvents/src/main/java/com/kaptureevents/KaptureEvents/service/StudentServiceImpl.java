@@ -3,6 +3,7 @@ package com.kaptureevents.KaptureEvents.service;
 import com.kaptureevents.KaptureEvents.entity.Events;
 import com.kaptureevents.KaptureEvents.entity.Student;
 import com.kaptureevents.KaptureEvents.entity.StudentEventRegistration;
+import com.kaptureevents.KaptureEvents.model.StudentEventRegistrationModel;
 import com.kaptureevents.KaptureEvents.model.StudentModel;
 import com.kaptureevents.KaptureEvents.repository.EventRepository;
 import com.kaptureevents.KaptureEvents.repository.StudentEventRegistrationRepository;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
@@ -65,11 +67,10 @@ public class StudentServiceImpl implements StudentService{
 
             // Return a ResponseEntity indicating success
             return ResponseEntity.ok("Student registered for event successfully");
-        } catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User already registered for the event");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
@@ -144,4 +145,45 @@ public class StudentServiceImpl implements StudentService{
         }
         return ResponseEntity.notFound().build();
     }
+
+    @Override
+    public ResponseEntity<Boolean> checkRegistration(String eventId, String emailId) {
+        try {
+            Optional<Events> event = eventRepository.findById(UUID.fromString(eventId));
+            Optional<Student> student = studentRepository.findById(emailId);
+
+            if (event.isPresent() && student.isPresent()) {
+                Optional<StudentEventRegistration> registration = studentEventRegistrationRepository.findByEventAndStudent(event.get(), student.get());
+
+                if (registration.isPresent()) {
+                    return ResponseEntity.ok(true);
+                }
+            }
+            return ResponseEntity.ok(false);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<StudentEventRegistrationModel>> getAllRegistrations() {
+        try {
+            List<StudentEventRegistration> registration = studentEventRegistrationRepository.findAll();
+            List<StudentEventRegistrationModel> registrationModels = new ArrayList<>();
+
+            for (StudentEventRegistration studentEventRegistration : registration) {
+                StudentEventRegistrationModel model = new StudentEventRegistrationModel();
+                model.setEventId(studentEventRegistration.getEvent().getEvent_id());
+                model.setEmailId(studentEventRegistration.getStudent().getEmail());
+
+                registrationModels.add(model);
+            }
+            return ResponseEntity.ok(registrationModels);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }

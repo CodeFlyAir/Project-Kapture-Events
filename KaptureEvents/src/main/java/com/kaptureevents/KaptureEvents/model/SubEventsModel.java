@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-
+import java.sql.Date;
 import java.time.ZonedDateTime;
-import java.util.Date;
+
 
 @Data
 @AllArgsConstructor
