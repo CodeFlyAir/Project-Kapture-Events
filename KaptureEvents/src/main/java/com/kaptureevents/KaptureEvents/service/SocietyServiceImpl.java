@@ -23,6 +23,7 @@
             society.setSocietyName(societyModel.getSocietyName());
             society.setEmailId(societyModel.getEmailId());
             society.setContact(societyModel.getContact());
+            society.setPassword(societyModel.getPassword());
 
             societyRepository.save(society); //saving to DB
         }
@@ -70,6 +71,14 @@
             return ResponseEntity.notFound().build();
         }
 
+        @Override
+        public ResponseEntity<Boolean> login(String email, String password) {
+            Optional<Society> society=societyRepository.findByEmailIdAndPassword(email,password);
 
+            if(society.isPresent()){
+                return ResponseEntity.ok(true);
+            }
+            return ResponseEntity.ok(false);
+        }
     }
 
