@@ -210,9 +210,10 @@ public class EventController {
 
     @DeleteMapping("/delete-special-guest")
     private ResponseEntity<List<SpecialGuestModel>> deleteSpecialGuest(@RequestParam("event-id") String eventId,
-                                                                       @RequestBody SpecialGuestModel specialGuestModel) {
+                                                                       @RequestParam("name") String name,
+                                                                       @RequestParam("file-name") String fileName) {
         try {
-            return eventService.deleteSpecialGuest(UUID.fromString(eventId), specialGuestModel);
+            return eventService.deleteSpecialGuest(UUID.fromString(eventId), name, fileName);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -222,7 +223,7 @@ public class EventController {
     // adding a new sub event
     @PostMapping("/add-sub-event")
     private ResponseEntity<List<SubEventsModel>> addNewSubEvent(@RequestParam("event-id") String eventId,
-                                                  @RequestBody SubEventsModel subEventsModel) {
+                                                                @RequestBody SubEventsModel subEventsModel) {
 
         try {
             return eventService.addNewSubEvent(UUID.fromString(eventId), subEventsModel);
@@ -235,7 +236,7 @@ public class EventController {
     //delete sub event
     @DeleteMapping("/delete-sub-event")
     private ResponseEntity<List<SubEventsModel>> deleteSubEvent(@RequestParam("event-id") String eventId,
-                                                  @RequestBody SubEventsModel subEventsModel) {
+                                                                @RequestBody SubEventsModel subEventsModel) {
         try {
             return eventService.deleteSubEvent(UUID.fromString(eventId), subEventsModel);
         } catch (Exception e) {
@@ -246,7 +247,7 @@ public class EventController {
 
     @PostMapping("/important-updates")
     private ResponseEntity<List<UpdateModel>> addUpdate(@RequestParam("event-id") String eventId,
-                                             @RequestBody String updateMessage) {
+                                                        @RequestBody String updateMessage) {
         try {
             return eventService.addUpdate(UUID.fromString(eventId), updateMessage);
         } catch (Exception e) {
@@ -258,7 +259,7 @@ public class EventController {
     //post social media links
     @PostMapping("/social-media-links")
     private ResponseEntity<SocialMediaLinksModel> addSocialMediaLinks(@RequestParam("event-id") String eventId,
-                                                       @RequestBody SocialMediaLinksModel socialMediaLinksModel) {
+                                                                      @RequestBody SocialMediaLinksModel socialMediaLinksModel) {
         try {
             return eventService.addSocialMediaLinks(UUID.fromString(eventId), socialMediaLinksModel);
         } catch (Exception e) {

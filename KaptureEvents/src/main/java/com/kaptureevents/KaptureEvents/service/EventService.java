@@ -41,7 +41,7 @@ public interface EventService {
 
     ResponseEntity<List<SpecialGuestModel>> addSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel, MultipartFile image);
 
-    ResponseEntity<List<SpecialGuestModel>> deleteSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel);
+    ResponseEntity<List<SpecialGuestModel>> deleteSpecialGuest(UUID eventId, String name, String fileName);
 
     ResponseEntity<List<Events>> getEvents();
 
