@@ -681,7 +681,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEntity<List<SpecialGuestModel>> deleteSpecialGuest(UUID eventId, SpecialGuestModel specialGuestModel) {
+    public ResponseEntity<List<SpecialGuestModel>> deleteSpecialGuest(UUID eventId, String name, String fileName) {
         Optional<Events> eventsOptional = eventRepository.findById(eventId);
 
         if (eventsOptional.isPresent()) {
@@ -695,7 +695,7 @@ public class EventServiceImpl implements EventService {
             Iterator<SpecialGuestModel> iterator = specialGuestModelList.iterator();
             while (iterator.hasNext()) {
                 SpecialGuestModel guestModel = iterator.next();
-                if (guestModel.equals(specialGuestModel)) {
+                if (guestModel.getName().equals(name) && guestModel.getImage().getFileName().equals(fileName)) {
                     try {
                         if (dataBucketUtil.deleteFile(guestModel.getImage().getFileName())) {
                             iterator.remove();
